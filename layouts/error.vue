@@ -22,13 +22,13 @@ export default {
       default: null
     }
   },
-  data () {
+  data() {
     return {
-      pageNotFound: '404 Not Found',
-      otherError: 'An error occurred'
+      pageNotFound: '404 - Página não encontrada!',
+      otherError: 'Ocorreu um erro ao tentar carregar a página!'
     }
   },
-  head () {
+  head() {
     const title =
       this.error.statusCode === 404 ? this.pageNotFound : this.otherError
     return {

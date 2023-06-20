@@ -1,6 +1,8 @@
 <template>
-  <h1>HOME - SOQ</h1>
-</template> 
+    <v-app>
+        <Nuxt />
+    </v-app>
+</template>
 
 <script>
 export default {
