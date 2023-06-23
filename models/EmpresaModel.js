@@ -1,24 +1,23 @@
-export function representanteModel(payload) {
+export function empresaModel(payload) {
 
     if (payload?.id) {
         return {
             id: payload.id,
             nome: payload.nome || "",
-            cpf_cnpj: payload.cpf_cnpj || null,
+            cnpj: payload.cpf_cnpj || null,
             email: payload.email || null,
             telefone: payload.telefone || null,
             obs: payload.obs || null,
-            empresas_id: payload.empresas_id || null,
-            pessoas_tipo_id: payload.pessoas_tipo_id || 7,
+            contato_nome: payload.contato_nome || false,
+            contato_tel: payload.contato_tel || null,
+            parceira_inea: payload.parceira_inea || null,
             enderecos: {
-                id: payload.enderecos?.id || null,
                 cep: payload.enderecos?.cep || null,
                 rua: payload.enderecos?.rua || null,
                 num: payload.enderecos?.num || null,
                 bairro: payload.enderecos?.bairro || null,
                 cidade: payload.enderecos?.cidade || null,
                 uf: payload.enderecos?.uf || null,
-                pessoas_id: payload.enderecos?.pessoas_id || null
             }
 
         }
@@ -30,8 +29,9 @@ export function representanteModel(payload) {
             email: null,
             telefone: null,
             obs: null,
-            empresas_id: null,
-            pessoas_tipo_id: 7,
+            parceira_inea: false,
+            contato_nome: null,
+            contato_tel: null,
             enderecos: {
                 cep: null,
                 rua: null,

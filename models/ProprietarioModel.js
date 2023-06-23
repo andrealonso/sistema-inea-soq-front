@@ -25,20 +25,20 @@ export function proprietarioModel(payload) {
     } else {
         return {
             id: null,
-            nome: 'Proprietario ',
-            cpf_cnpj: '09043261793',
-            email: 'propri@gmail.com',
-            telefone: '22999090311',
+            nome: null,
+            cpf_cnpj: null,
+            email: null,
+            telefone: null,
             obs: null,
             empresas_id: null,
             pessoas_tipo_id: 6,
             enderecos: {
-                cep: '28055290',
-                rua: 'Rua',
-                num: '18',
-                bairro: 'Caju',
-                cidade: 'Campos',
-                uf: 'RJ',
+                cep: null,
+                rua: null,
+                num: null,
+                bairro: null,
+                cidade: null,
+                uf: null,
             }
         }
     }

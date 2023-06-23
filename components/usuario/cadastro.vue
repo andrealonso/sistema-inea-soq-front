@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="open" persistent>
         <v-card>
-            <v-card-title>Perfil de Acesso</v-card-title>
+            <v-card-title class="green lighten-1 white--text">Perfil de Acesso</v-card-title>
             <v-card-text>
                 <v-container>
                     <v-row>
@@ -35,7 +35,7 @@
                         </v-col>
                     </v-row>
                 </v-container>
-                <pre>{{ item }}</pre>
+
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
