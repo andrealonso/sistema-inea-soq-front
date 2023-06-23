@@ -124,27 +124,15 @@ export default {
     },
     methods: {
         async consultaCep() {
-            const cep = this.item.enderecos.cep.replace(/\D/g, '')
-            const validaCep = /^[0-9]{8}$/
-            if (!cep || !validaCep.test(cep)) {
-                this.exibSnack('CEP inválida ou não encontrado!', 'error')
-                this.limparEndereco()
-                return
-            }
-            try {
-                const result = await this.$axios.$get(`http://viacep.com.br/ws/${cep}/json/`)
+            const result = await this.$buscaCep(this.item.enderecos.cep)
+            if (result) {
                 this.item.enderecos.rua = result?.logradouro || null
                 this.item.enderecos.bairro = result?.bairro || null
                 this.item.enderecos.cidade = result?.localidade || null
                 this.item.enderecos.uf = result?.uf || null
                 this.$refs.inputNum.focus()
-                if (result?.erro) {
-                    this.exibSnack('CEP inválida ou não encontrado!', 'error')
-                    this.limparEndereco()
-                    return
-                }
-            } catch (error) {
-                this.exibSnack('CEP inválida ou não encontrado!', 'error')
+            } else {
+                this.exibSnack('CEP inválido ou não encontrado!', 'error')
                 this.limparEndereco()
             }
         },

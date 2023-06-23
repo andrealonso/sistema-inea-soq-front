@@ -4,7 +4,7 @@ export function representanteModel(payload) {
         return {
             id: payload.id,
             nome: payload.nome || "",
-            cpf_cnpj: payload.cpf_cnpj || null,
+            cpf_cnpj: payload.cpf_cnpj || '',
             email: payload.email || null,
             telefone: payload.telefone || null,
             obs: payload.obs || null,
@@ -18,17 +18,16 @@ export function representanteModel(payload) {
                 bairro: payload.enderecos?.bairro || null,
                 cidade: payload.enderecos?.cidade || null,
                 uf: payload.enderecos?.uf || null,
-                pessoas_id: payload.enderecos?.pessoas_id || null
             }
 
         }
     } else {
         return {
             id: null,
-            nome: null,
-            cpf_cnpj: null,
-            email: null,
-            telefone: null,
+            nome: '',
+            cpf_cnpj: '',
+            email: '',
+            telefone: '',
             obs: null,
             empresas_id: null,
             pessoas_tipo_id: 7,

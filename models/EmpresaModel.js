@@ -4,14 +4,15 @@ export function empresaModel(payload) {
         return {
             id: payload.id,
             nome: payload.nome || "",
-            cnpj: payload.cpf_cnpj || null,
+            cnpj: payload.cnpj || null,
             email: payload.email || null,
             telefone: payload.telefone || null,
             obs: payload.obs || null,
-            contato_nome: payload.contato_nome || false,
+            contato_nome: payload.contato_nome || null,
             contato_tel: payload.contato_tel || null,
-            parceira_inea: payload.parceira_inea || null,
+            parceira_inea: payload.parceira_inea || false,
             enderecos: {
+                id: payload.enderecos?.id || null,
                 cep: payload.enderecos?.cep || null,
                 rua: payload.enderecos?.rua || null,
                 num: payload.enderecos?.num || null,
@@ -24,8 +25,8 @@ export function empresaModel(payload) {
     } else {
         return {
             id: null,
-            nome: null,
-            cpf_cnpj: null,
+            nome: '',
+            cnpj: null,
             email: null,
             telefone: null,
             obs: null,

@@ -28,6 +28,7 @@ export default {
     "@/plugins/mask",
     "@/plugins/moment",
     "@/plugins/validacoes",
+    "@/plugins/buscaCep",
     "@/plugins/axios"
   ],
 
