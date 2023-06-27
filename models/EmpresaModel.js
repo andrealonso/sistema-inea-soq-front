@@ -11,21 +11,18 @@ export function empresaModel(payload) {
             contato_nome: payload.contato_nome || null,
             contato_tel: payload.contato_tel || null,
             parceira_inea: payload.parceira_inea || false,
-            enderecos: {
-                id: payload.enderecos?.id || null,
-                cep: payload.enderecos?.cep || null,
-                rua: payload.enderecos?.rua || null,
-                num: payload.enderecos?.num || null,
-                bairro: payload.enderecos?.bairro || null,
-                cidade: payload.enderecos?.cidade || null,
-                uf: payload.enderecos?.uf || null,
-            }
+            cep: payload.cep || null,
+            rua: payload.rua || null,
+            num: payload.num || null,
+            bairro: payload.bairro || null,
+            cidade: payload.cidade || null,
+            uf: payload.uf || null,
 
         }
     } else {
         return {
             id: null,
-            nome: '',
+            nome: "",
             cnpj: null,
             email: null,
             telefone: null,
@@ -33,14 +30,12 @@ export function empresaModel(payload) {
             parceira_inea: false,
             contato_nome: null,
             contato_tel: null,
-            enderecos: {
-                cep: null,
-                rua: null,
-                num: null,
-                bairro: null,
-                cidade: null,
-                uf: null,
-            }
+            cep: null,
+            rua: null,
+            num: null,
+            bairro: null,
+            cidade: null,
+            uf: null
         }
     }
 

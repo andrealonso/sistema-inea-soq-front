@@ -13,8 +13,9 @@
                                     outlined dense required validate-on-blur></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
-                                <v-text-field :rules="[rules.required]" validate-on-blur v-model="item.cnpj" label="CNPJ"
-                                    outlined dense v-mask="['##.###.###/####-##']" required></v-text-field>
+                                <v-text-field :rules="[rules.required, rules.cnpjValido]" validate-on-blur
+                                    v-model="item.cnpj" label="CNPJ" outlined dense v-mask="['##.###.###/####-##']"
+                                    required></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
                                 <v-text-field :rules="[rules.required]" validate-on-blur v-model="item.telefone"
@@ -35,28 +36,29 @@
 
                             <!--         Cadastro de endereco          -->
                             <template v-if="exibEndereco">
+
                                 <v-col cols="12" sm="6" md="2">
-                                    <v-text-field v-mask="['#####-###']" v-model="item.cep" label="CEP" outlined dense
-                                        @blur="consultaCep"></v-text-field>
+                                    <v-text-field v-mask="['#####-###']" v-model="item.enderecos.cep" label="CEP" outlined
+                                        dense @blur="consultaCep"></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="8">
-                                    <v-text-field :rules="[rules.required]" v-model="item.rua" label="Rua" outlined
-                                        dense></v-text-field>
+                                    <v-text-field :rules="[rules.required]" v-model="item.enderecos.rua" label="Rua"
+                                        outlined dense></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="2">
-                                    <v-text-field :rules="[rules.required]" ref="inputNum" v-model="item.num" label="Núm."
+                                    <v-text-field :rules="[rules.required]" ref="inputNum" v-model="item.enderecos.num"
+                                        label="Núm." outlined dense></v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="5">
+                                    <v-text-field :rules="[rules.required]" v-model="item.enderecos.bairro" label="Bairro"
                                         outlined dense></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="5">
-                                    <v-text-field :rules="[rules.required]" v-model="item.bairro" label="Bairro" outlined
-                                        dense></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="5">
-                                    <v-text-field :rules="[rules.required]" v-model="item.cidade" label="Cidade" outlined
-                                        dense></v-text-field>
+                                    <v-text-field :rules="[rules.required]" v-model="item.enderecos.cidade" label="Cidade"
+                                        outlined dense></v-text-field>
                                 </v-col>
                                 <v-col cols="12" sm="6" md="2">
-                                    <v-text-field :rules="[rules.required]" v-model="item.uf" label="UF" outlined
+                                    <v-text-field :rules="[rules.required]" v-model="item.enderecos.uf" label="UF" outlined
                                         dense></v-text-field>
                                 </v-col>
                             </template>
@@ -69,8 +71,7 @@
                             </v-col>
                             <!-- <pre>{{ item }}</pre> -->
                         </v-row>
-                        <dialogConfirme @sim="deleteItem(item)" @nao="deleteConfirme = false" :dlg-confirme="deleteConfirme"
-                            texto="Tem certeza que deseja excluir este registro?" cor="error" titulo="Confirme exclusão!" />
+
                     </v-container>
                 </v-form>
             </v-card-text>
@@ -80,7 +81,7 @@
                 </v-btn>
                 <v-btn color="secondary" elevation="2" outlined dense @click.prevent.stop="cancelarRegistro">
                     Cancelar</v-btn>
-                <v-btn color="error" elevation="2" outlined dense @click.prevent.stop="deleteConfirme = true"
+                <v-btn color="error" elevation="2" outlined dense @click.prevent.stop="deleteItem(item)"
                     :disabled="!isEdit">Excluir
                 </v-btn>
                 <v-spacer></v-spacer>
@@ -91,17 +92,15 @@
 </template>
 
 <script>
-import moment from 'moment'
 
 export default {
     props: ['item', 'isEdit', 'open'],
     data() {
         return {
             valid: true,
-            tituloPagina: 'Cadastro de Empresas',
+            tituloPagina: 'Cadastro de Propriedades',
             exibEndereco: true,
             endereco: {},
-            deleteConfirme: false,
             status: [
                 { id: 1, descri: "ATIVO" },
                 { id: 2, descri: "INATIVO" }
@@ -124,12 +123,12 @@ export default {
     },
     methods: {
         async consultaCep() {
-            const result = await this.$buscaCep(this.item.cep)
+            const result = await this.$buscaCep(this.item.enderecos.cep)
             if (result) {
-                this.item.rua = result?.logradouro || null
-                this.item.bairro = result?.bairro || null
-                this.item.cidade = result?.localidade || null
-                this.item.uf = result?.uf || null
+                this.item.enderecos.rua = result?.logradouro || null
+                this.item.enderecos.bairro = result?.bairro || null
+                this.item.enderecos.cidade = result?.localidade || null
+                this.item.enderecos.uf = result?.uf || null
                 this.$refs.inputNum.focus()
             } else {
                 this.exibSnack('CEP inválido ou não encontrado!', 'error')
@@ -138,10 +137,14 @@ export default {
 
         },
         limparEndereco() {
-            this.item.rua = null
-            this.item.bairro = null
-            this.item.cidade = null
-            this.item.uf = null
+            this.item.enderecos.rua = null
+            this.item.enderecos.bairro = null
+            this.item.enderecos.cidade = null
+            this.item.enderecos.uf = null
+        },
+        corStatus(id) {
+            if (id == 1) return 'green--text'
+            if (id == 2) return 'red--text'
         },
         async salvarItem(item) {
             if (!this.$refs.form.validate()) {

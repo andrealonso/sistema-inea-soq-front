@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="dlgConfirme" max-width="320" persistent>
         <v-card>
-            <v-card-title :class="['text-h5', 'text-center', cor || 'primary']">
+            <v-card-title :class="['text-center', cor || 'primary']">
                 <span>{{ titulo }}</span>
             </v-card-title>
 

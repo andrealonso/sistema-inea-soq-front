@@ -137,7 +137,6 @@ export default {
             const { id } = item
             try {
                 const empresa = await this.$axios.$get(`/empresa/${id}`)
-                empresa.enderecos = (empresa.enderecos[0] || null)
                 this.payload = empresaModel(empresa)
                 this.exibCadastro = true
                 this.isEdit = true
