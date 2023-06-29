@@ -57,7 +57,7 @@ export default {
     async asyncData({ $axios }) {
         let listagem = []
         try {
-            const resposta = await $axios.$get('/pessoas/?tipo=6')
+            const resposta = await $axios.$get('/proprietarios')
             if (!resposta?.erro) {
                 listagem = resposta.dados.registros
             } else {
@@ -125,7 +125,7 @@ export default {
         },
         async atualizarListagem() {
             try {
-                const resposta = await this.$axios.$get('/pessoas/?tipo=6')
+                const resposta = await this.$axios.$get('/proprietarios')
                 if (!resposta?.erro) {
                     this.listagem = resposta.dados.registros
                 } else {
@@ -136,25 +136,12 @@ export default {
                 console.log({ error });
             }
         },
-        async excluirItem() {
-            const { id } = this.itemSelect
-            try {
-                await this.$axios.$delete(`/pessoa/${id}`)
-                this.exibSnack('Cliente excluído com sucesso!', 'success')
-                this.atualizarListagem()
-            } catch (error) {
-                this.exibSnack('Não foi possível excluir este cliente', 'error')
-                console.log(error);
-            }
-            this.dlgConfirme = false
-            this.itemSelect = null
-        },
+
         async exibirItem(item) {
             const { id } = item
             try {
-                const pessoa = await this.$axios.$get(`/pessoa/${id}`)
-                pessoa.enderecos = (pessoa.enderecos[0] || null)
-                this.payload = proprietarioModel(pessoa)
+                const payload = await this.$axios.$get(`/proprietario/${id}`)
+                this.payload = proprietarioModel(payload)
                 this.exibCadastro = true
                 this.isEdit = true
             } catch (error) {

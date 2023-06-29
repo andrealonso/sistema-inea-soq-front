@@ -34,32 +34,32 @@
                             </v-col>
 
                             <!--         Cadastro de endereco          -->
-                            <template v-if="exibEndereco">
-                                <v-col cols="12" sm="6" md="2">
-                                    <v-text-field v-mask="['#####-###']" v-model="item.cep" label="CEP" outlined dense
-                                        @blur="consultaCep"></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="8">
-                                    <v-text-field :rules="[rules.required]" v-model="item.rua" label="Rua" outlined
-                                        dense></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="2">
-                                    <v-text-field :rules="[rules.required]" ref="inputNum" v-model="item.num" label="Núm."
-                                        outlined dense></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="5">
-                                    <v-text-field :rules="[rules.required]" v-model="item.bairro" label="Bairro" outlined
-                                        dense></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="5">
-                                    <v-text-field :rules="[rules.required]" v-model="item.cidade" label="Cidade" outlined
-                                        dense></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="2">
-                                    <v-text-field :rules="[rules.required]" v-model="item.uf" label="UF" outlined
-                                        dense></v-text-field>
-                                </v-col>
-                            </template>
+
+                            <v-col cols="12" sm="6" md="2">
+                                <v-text-field v-mask="['#####-###']" v-model="item.cep" label="CEP" outlined dense
+                                    @blur="consultaCep"></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="8">
+                                <v-text-field :rules="[rules.required]" v-model="item.rua" label="Rua" outlined
+                                    dense></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="2">
+                                <v-text-field :rules="[rules.required]" ref="inputNum" v-model="item.num" label="Núm."
+                                    outlined dense></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="5">
+                                <v-text-field :rules="[rules.required]" v-model="item.bairro" label="Bairro" outlined
+                                    dense></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="5">
+                                <v-text-field :rules="[rules.required]" v-model="item.cidade" label="Cidade" outlined
+                                    dense></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="2">
+                                <v-text-field :rules="[rules.required]" v-model="item.uf" label="UF" outlined
+                                    dense></v-text-field>
+                            </v-col>
+
                             <v-col cols="12" sm="6" md="12">
                                 <v-checkbox v-model="item.parceira_inea" label="Empresa parceira do INEA." color="success"
                                     hide-details></v-checkbox>
@@ -99,9 +99,8 @@ export default {
         return {
             valid: true,
             tituloPagina: 'Cadastro de Empresas',
-            exibEndereco: true,
-            endereco: {},
             deleteConfirme: false,
+            itemOld: { ...this.item },
             status: [
                 { id: 1, descri: "ATIVO" },
                 { id: 2, descri: "INATIVO" }
@@ -147,12 +146,22 @@ export default {
             if (!this.$refs.form.validate()) {
                 return
             }
-            if (!this.isEdit) {
-                this.createItem(item)
+            if (this.foiAlterado()) {
+                if (!this.isEdit) {
+                    this.createItem(item)
+                } else {
+                    this.updateItem(item)
+                }
             } else {
-                this.updateItem(item)
+                this.$emit('close')
+                this.exibSnack('Registro salvo com sucesso!', 'success')
             }
 
+        },
+        foiAlterado() {
+            if (JSON.stringify(this.itemOld) === JSON.stringify(this.item))
+                return false
+            return true
         },
         async createItem(item) {
             try {

@@ -33,7 +33,8 @@
         </v-col>
 
         <propriedadesCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
-            @atualizarListagem="atualizarListagem" @exibSnack="exibSnack" :isEdit="isEdit" :item="payload" />
+            @atualizarListagem="atualizarListagem" @exibSnack="exibSnack" :isEdit="isEdit" :item="payload"
+            :lista-selecao="listaSelecao" />
 
 
         <DialogLoading v-if="isLoading" :is-loading="isLoading" :cor="'purple lighten-1'" :texto="'Atualizando dados...'" />
@@ -74,13 +75,14 @@ export default {
             isEdit: false,
             isLoading: false,
             search: '',
+            listaSelecao: {},
             headers: [
                 { text: 'Código', value: 'id', align: 'left', margin: '12px' },
                 { text: 'Nome', value: 'nome', align: 'left' },
-                { text: 'Proprietário', value: 'proprietarios', align: 'center' },
-                { text: 'Representante', value: 'email', align: 'center' },
-                { text: 'Cidade', value: 'contato_nome', align: 'center' },
-                { text: 'Bairro', value: 'contato_tel', align: 'center' },
+                { text: 'Proprietário', value: 'proprietarios.nome', align: 'center' },
+                { text: 'Representante', value: 'representante.nome', align: 'center' },
+                { text: 'Bairro', value: 'bairro', align: 'center' },
+                { text: 'Cidade', value: 'cidade', align: 'center' },
                 { text: 'Ações', value: 'actions', sortable: false, align: 'right' },
             ],
             exibLista: false,
@@ -106,7 +108,9 @@ export default {
             if (id == 1) return 'green--text'
             if (id == 2) return 'red--text'
         },
-        novoItem() {
+        async novoItem() {
+            const { representantes, proprietarios } = await this.$axios.$get(`/propriedade/0`)
+            this.listaSelecao = { representantes, proprietarios }
             this.payload = propriedadeModel()
             this.isEdit = false
             this.exibCadastro = true
@@ -136,9 +140,10 @@ export default {
         async exibirItem(item) {
             const { id } = item
             try {
-                const empresa = await this.$axios.$get(`/propriedade/${id}`)
-                empresa.enderecos = (empresa.enderecos[0] || null)
-                this.payload = propriedadeModel(empresa)
+                const resposta = await this.$axios.$get(`/propriedade/${id}`)
+                const { representantes, proprietarios, propriedade } = resposta
+                this.listaSelecao = { representantes, proprietarios }
+                this.payload = propriedadeModel(propriedade)
                 this.exibCadastro = true
                 this.isEdit = true
             } catch (error) {

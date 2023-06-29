@@ -10,53 +10,45 @@
                         <v-row>
                             <v-col cols="12" sm="6" md="6">
                                 <v-text-field :rules="[rules.required, rules.counter]" v-model="item.nome" label="Nome"
-                                    outlined dense :error-messages="formErros.nome" required
-                                    validate-on-blur></v-text-field>
+                                    outlined dense required validate-on-blur></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
-                                <v-text-field :rules="[rules.required, rules.cpfValido]" validate-on-blur
-                                    v-model="item.cpf_cnpj" label="CPF" outlined dense v-mask="['###.###.###-##']" required
-                                    :error-messages="formErros.cpf"></v-text-field>
+                                <v-text-field :rules="[rules.required, rules.cpfValido]" validate-on-blur v-model="item.cpf"
+                                    label="CPF" outlined dense v-mask="['###.###.###-##']" required></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
                                 <v-text-field :rules="[rules.required]" validate-on-blur v-model="item.telefone"
                                     label="Telefone" outlined dense v-mask="['(##)#####-####']"></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
-                                <v-text-field :rules="[rules.required, rules.email]" validate-on-blur type="email"
-                                    v-model="item.email" label="Email" outlined dense></v-text-field>
+                                <v-text-field type="email" v-model="item.email" label="Email" outlined dense></v-text-field>
                             </v-col>
 
-                            <!--         Cadastro de endereco          -->
-                            <template v-if="exibEndereco">
+                            <v-col cols="12" sm="6" md="2">
+                                <v-text-field v-mask="['#####-###']" v-model="item.cep" label="CEP" outlined dense
+                                    @blur="consultaCep"></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="8">
+                                <v-text-field :rules="[rules.required]" v-model="item.rua" label="Rua" outlined
+                                    dense></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="2">
+                                <v-text-field :rules="[rules.required]" ref="inputNum" v-model="item.num" label="Núm."
+                                    outlined dense></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="5">
+                                <v-text-field :rules="[rules.required]" v-model="item.bairro" label="Bairro" outlined
+                                    dense></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="5">
+                                <v-text-field :rules="[rules.required]" v-model="item.cidade" label="Cidade" outlined
+                                    dense></v-text-field>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="2">
+                                <v-text-field :rules="[rules.required]" v-model="item.uf" label="UF" outlined
+                                    dense></v-text-field>
+                            </v-col>
 
-                                <v-col cols="12" sm="6" md="2">
-                                    <v-text-field v-mask="['#####-###']" v-model="item.enderecos.cep" label="CEP" outlined
-                                        dense @blur="consultaCep"></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="8">
-                                    <v-text-field :rules="[rules.required]" v-model="item.enderecos.rua" label="Rua"
-                                        outlined dense></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="2">
-                                    <v-text-field :rules="[rules.required]" ref="inputNum" v-model="item.enderecos.num"
-                                        label="Núm." outlined dense></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="5">
-                                    <v-text-field :rules="[rules.required]" v-model="item.enderecos.bairro" label="Bairro"
-                                        outlined dense></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="5">
-                                    <v-text-field :rules="[rules.required]" v-model="item.enderecos.cidade" label="Cidade"
-                                        outlined dense></v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="2">
-                                    <v-text-field :rules="[rules.required]" v-model="item.enderecos.uf" label="UF" outlined
-                                        dense></v-text-field>
-                                </v-col>
-
-                            </template>
-                            <!-- <pre>{{ item }}</pre> -->
                         </v-row>
 
                     </v-container>
@@ -87,25 +79,11 @@ export default {
         return {
             valid: true,
             tituloPagina: 'Cadastro de Representantes',
-            exibSenha: false,
-            dialogUser: false,
-            exibEndereco: true,
-            exibUsuario: true,
-            exibCadUser: false,
-            endereco: {},
-            usuario: {},
-            senhaRepetida: '',
+            itemOld: { ...this.item },
             status: [
                 { id: 1, descri: "ATIVO" },
                 { id: 2, descri: "INATIVO" }
             ],
-            formErros: {
-                nome: null,
-                cpf: null,
-                telefone: null,
-                senha: null,
-                senhaDiferente: null,
-            },
             rules: {
                 required: value => !!value || 'Requerido!',
                 counter: value => value.length >= 6 || 'Min. de 6 dígitos!',
@@ -124,35 +102,23 @@ export default {
     },
     methods: {
         async consultaCep() {
-            const cep = this.item.enderecos.cep.replace(/\D/g, '')
-            const validaCep = /^[0-9]{8}$/
-            if (!cep || !validaCep.test(cep)) {
-                this.exibSnack('CEP inválida ou não encontrado!', 'error')
-                this.limparEndereco()
-                return
-            }
-            try {
-                const result = await this.$axios.$get(`http://viacep.com.br/ws/${cep}/json/`)
-                this.item.enderecos.rua = result?.logradouro || null
-                this.item.enderecos.bairro = result?.bairro || null
-                this.item.enderecos.cidade = result?.localidade || null
-                this.item.enderecos.uf = result?.uf || null
+            const result = await this.$buscaCep(this.item.cep)
+            if (result) {
+                this.item.rua = result?.logradouro || null
+                this.item.bairro = result?.bairro || null
+                this.item.cidade = result?.localidade || null
+                this.item.uf = result?.uf || null
                 this.$refs.inputNum.focus()
-                if (result?.erro) {
-                    this.exibSnack('CEP inválida ou não encontrado!', 'error')
-                    this.limparEndereco()
-                    return
-                }
-            } catch (error) {
-                this.exibSnack('CEP inválida ou não encontrado!', 'error')
+            } else {
+                this.exibSnack('CEP inválido ou não encontrado!', 'error')
                 this.limparEndereco()
             }
         },
         limparEndereco() {
-            this.item.enderecos.rua = null
-            this.item.enderecos.bairro = null
-            this.item.enderecos.cidade = null
-            this.item.enderecos.uf = null
+            this.item.rua = null
+            this.item.bairro = null
+            this.item.cidade = null
+            this.item.uf = null
         },
         formValido() {
         },
@@ -164,17 +130,27 @@ export default {
             if (!this.$refs.form.validate()) {
                 return
             }
-            if (!this.isEdit) {
-                this.createItem(item)
+            if (this.foiAlterado()) {
+                if (!this.isEdit) {
+                    this.createItem(item)
+                } else {
+                    this.updateItem(item)
+                }
             } else {
-                this.updateItem(item)
+                this.$emit('close')
+                this.exibSnack('Registro salvo com sucesso!', 'success')
             }
 
+        },
+        foiAlterado() {
+            if (JSON.stringify(this.itemOld) === JSON.stringify(this.item))
+                return false
+            return true
         },
         async createItem(item) {
             try {
                 delete item.id
-                await this.$axios.$post(`/pessoa`, item,)
+                await this.$axios.$post(`/representante`, item,)
                 this.$emit('atualizarListagem')
                 this.$emit('close')
                 this.exibSnack('Registro salvo com sucesso!', 'success')
@@ -185,7 +161,7 @@ export default {
         },
         async updateItem(item) {
             try {
-                await this.$axios.$put(`/pessoa/${item.id}`, item)
+                await this.$axios.$put(`/representante/${item.id}`, item)
                 this.$emit('atualizarListagem')
                 this.$emit('close')
                 this.exibSnack('Registro salvo com sucesso!', 'success')
@@ -199,7 +175,7 @@ export default {
         },
         async deleteItem(item) {
             try {
-                await this.$axios.$delete(`/pessoa/${item.id}`)
+                await this.$axios.$delete(`/representante/${item.id}`)
                 this.$emit('atualizarListagem')
                 this.$emit('close')
                 this.exibSnack('Registro exluído com sucesso!', 'success')

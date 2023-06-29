@@ -1,12 +1,12 @@
 export default function ({ $axios, redirect }) {
     $axios.onRequest(config => {
-        config.headers.Authorization = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiaWF0IjoxNjg3MTg3NDQ0LCJleHAiOjE2ODcyNzM0NDR9.YEYNwvacg4z8wGJ7V4GSI9x2iHXRJ6XyRJQLBUjgJ9g'
+        config.headers.Authorization = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo3LCJ1c2VyX3RpcG9faWQiOjEsImVtcHJlc2FfaWQiOm51bGwsInBhcmNlaXJhX2luZWEiOmZhbHNlLCJpYXQiOjE2ODc5ODM0MDYsImV4cCI6MTY4ODA2OTQwNn0.a2n7_gPiNF6atPuvKxKX2fhAhvWczVh5voot6VldyUE'
     })
 
     $axios.onError(error => {
         const code = parseInt(error.response && error.response.status)
-        if (code === 400) {
-            redirect('/400')
+        if (code === 401) {
+            redirect('/login')
         }
     })
 }

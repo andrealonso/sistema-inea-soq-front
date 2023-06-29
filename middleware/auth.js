@@ -1,6 +1,5 @@
-export default function ({ redirect }) {
-    console.log('Middleware auth');
+export default function (context) {
+    console.log(context);
     return
-    return redirect('/login')
-    console.log('middleware fiscais');
+
 }
