@@ -113,7 +113,7 @@ export default {
                     return pattern.test(value) || 'Email inválido'
                 },
                 cnpjValido: value => this.$cnpjValido(value) || 'CNPJ inválido!',
-                senhaDiferente: value => this.comparaSenha(value) || 'Senha não confere! Repita a mesma senha.'
+
             },
 
         }

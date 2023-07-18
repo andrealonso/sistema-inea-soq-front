@@ -2,7 +2,7 @@
   <v-app>
     <v-navigation-drawer v-model="drawer" :mini-variant="miniVariant" :clipped="clipped" fixed app>
       <v-list>
-        <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact>
+        <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact color="success">
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
@@ -12,103 +12,194 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar :clipped-left="clipped" fixed app elevation="1">
+    <v-app-bar :clipped-left="clipped" fixed app elevation="1" color="success">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>{{ title }}</v-toolbar-title>
-      <!-- <v-btn icon @click.stop="miniVariant = !miniVariant">
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn> -->
-      <!-- <v-btn icon @click.stop="clipped = !clipped">
-        <v-icon>mdi-application</v-icon>
-      </v-btn> -->
-      <!-- <v-btn icon @click.stop="fixed = !fixed">
-        <v-icon>mdi-minus</v-icon>
-      </v-btn> -->
-      <v-spacer />
-      <!-- <v-btn icon @click.stop="rightDrawer = !rightDrawer">
-        <v-icon>mdi-menu</v-icon>
-      </v-btn> -->
+      <v-toolbar-title>
+
+        <span> INEA - Sistema de Ordem de queima</span>
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-menu bottom open-on-hover>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn icon v-bind="attrs" v-on="on">
+            <v-icon> mdi-account-circle</v-icon>
+          </v-btn>
+          <div>{{ nomeUser }}</div>
+        </template>
+        <v-card min-width="150">
+          <v-card-text class="text-center">
+            <v-btn text small @click="editarPerfil"> Editar perfil</v-btn>
+            <v-btn text small @click="logout"> Sair</v-btn>
+          </v-card-text>
+        </v-card>
+
+      </v-menu>
     </v-app-bar>
     <v-main>
-      <v-container>
+      <v-container fluid>
         <Nuxt />
+        <!-- <pre>{{ $store.state.user }}</pre> -->
+        <perfilCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
+          @atualizarListagem="atualizarListagem" @exibSnack="exibSnack" :isEdit="isEdit" :item="payload" />
+        <snackbar v-if="snack.active" :snack="snack" @close="snack.active = false" />
       </v-container>
     </v-main>
-    <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light>
-              mdi-repeat
-            </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
-    <!-- <v-footer
-      :absolute="!fixed"
-      app
-    >
-      <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer> -->
+
   </v-app>
 </template>
 
 <script>
-import Vue from 'vue';
+import Vue, { onMounted } from 'vue';
+import { usuarioModel } from '~/models/UsuarioModel'
 const eventBus = new Vue()
 export default {
   name: 'DefaultLayout',
   data() {
     return {
-      clipped: true,
-      drawer: false,
-      fixed: true,
-      items: [
-        {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/'
-        },
-        {
-          icon: 'mdi-account-group',
-          title: 'Propriedades',
-          to: '/propriedades'
-        },
-        {
-          icon: 'mdi-clipboard-account',
-          title: 'Funcionarios',
-          to: '/funcionarios'
-        },
-        {
-          icon: 'mdi-hanger',
-          title: 'Proprietários',
-          to: '/proprietarios'
-        },
-        {
-          icon: 'mdi-file-document',
-          title: 'Representantes',
-          to: '/representantes'
-        },
-        {
-          icon: 'mdi-clipboard-flow',
-          title: 'Fiscais',
-          to: '/fiscais'
-        },
-        {
-          icon: 'mdi-currency-usd',
-          title: 'Empresas',
-          to: '/empresas'
-        },
+      payload: null,
+
+      exibCadastro: false,
+      isEdit: false,
+      listaMenu: [
 
       ],
+      clipped: true,
+      drawer: true,
+      fixed: true,
+      items: this.configMenu(),
+      tipoUser: '',
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'INEA - Sistem de ordem de queima'
+      title: 'INEA - Sistem de ordem de queima',
+      snack: {
+        active: false,
+        text: "teste",
+        timeout: 2000,
+        color: "primary"
+      }
     }
-  }
+
+  },
+
+  computed: {
+    nomeUser() {
+      let nome = this.$store.state.user.nome
+      return nome ? nome.split(' ').slice(0, 2).join(' ') : ''
+    }
+  },
+  methods: {
+    exibSnack(texto, cor) {
+      this.snack.color = cor || ''
+      this.snack.text = texto || ''
+      this.snack.active = true
+    },
+    async atualizarListagem() {
+      try {
+
+      } catch (error) {
+        this.listagem = []
+        console.log({ error });
+      }
+    },
+
+
+    cancelar() {
+      this.payload = usuarioModel()
+      this.exibCadastro = false
+    },
+    async editarPerfil() {
+      const id = this.$store.state.user.user_id
+      try {
+        const payload = await this.$axios.$get(`/usuario/${id}`)
+        this.payload = usuarioModel(payload.dados)
+        this.exibCadastro = true
+        this.isEdit = true
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    configMenu() {
+
+      // 1 - ADM ROOT
+      // 2 - ADM INEA
+      // 3 - ADM EMPRESA
+      // 4 - FISCAL
+      // 5 - FUNCIONARIOS
+      const user_tipo_id = this.$store.state.user.user_tipo_id || 0
+
+      const lista = [
+        // {
+        //   icon: 'mdi-apps',
+        //   title: 'Home',
+        //   to: '/'
+        // },
+      ]
+
+
+      if ([1, 3, 5].some(item => item === user_tipo_id)) {
+        lista.push(
+          {
+            icon: 'mdi-domain',
+            title: 'Propriedades',
+            to: '/propriedades'
+          }
+        )
+      }
+      if ([1, 3, 5].some(item => item === user_tipo_id)) {
+        lista.push(
+          {
+            icon: 'mdi-account-group',
+            title: 'Proprietários',
+            to: '/proprietarios'
+          },
+        )
+      }
+      if ([1, 3, 5].some(item => item === user_tipo_id)) {
+        lista.push(
+          {
+            icon: 'mdi-account-multiple-outline',
+            title: 'Representantes',
+            to: '/representantes'
+          }
+        )
+      }
+      if ([1, 2].some(item => item === user_tipo_id)) {
+        lista.push(
+          {
+            icon: 'mdi-factory',
+            title: 'Empresas',
+            to: '/empresas'
+          }
+        )
+      }
+      if ([1, 2, 3].some(item => item === user_tipo_id)) {
+        lista.push(
+          {
+            icon: 'mdi-account-key',
+            title: 'Usuarios',
+            to: '/usuarios'
+          }
+        )
+      }
+      if ([1, 2, 3, 4, 5].some(item => item === user_tipo_id)) {
+        lista.push(
+          {
+            icon: 'mdi-calendar-month',
+            title: 'Agendamentos',
+            to: '/agendamentos'
+          }
+        )
+      }
+      return lista
+    },
+    async logout() {
+      sessionStorage.removeItem('user')
+      this.$router.push({ path: '/login' })
+    }
+  },
+
+
 }
 </script>
 <style>

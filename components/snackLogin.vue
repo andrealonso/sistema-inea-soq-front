@@ -1,7 +1,8 @@
 <template>
-    <v-snackbar v-model="snack.active" :color="snack.color" :timeout="snack.timeout" class="snack">
-        <span class="grey--text text--darken-4">
+    <v-snackbar absolute v-model="snack.active" :color="snack.color" :timeout="snack.timeout" class="snack fill-width">
+        <span class="black--text">
             {{ snack.text }}
+
         </span>
         <template v-slot:action="{ attrs }">
             <v-btn color="blue" text v-bind="attrs" @click="close">
@@ -25,6 +26,6 @@ export default {
 
 <style scoped>
 .snack {
-    bottom: 6vh;
+    /* bottom: 6vh; */
 }
 </style>

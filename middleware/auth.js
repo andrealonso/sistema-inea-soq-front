@@ -1,5 +1,4 @@
-export default function (context) {
-    console.log(context);
-    return
+export default async function ({ $axios, store, route, redirect }) {
+
 
 }

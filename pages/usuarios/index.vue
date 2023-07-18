@@ -3,9 +3,9 @@
         <v-col cols="12">
             <v-card class="p-3">
                 <v-card-title>
-                    <h4>Lista de Empresas</h4>
+                    <h4>Lista de Usuarios</h4>
                     <v-spacer></v-spacer>
-                    <v-text-field dense outlined v-model="search" append-icon="mdi-magnify" label="Pesquisar" single-line
+                    <v-text-field v-model="search" outlined dense append-icon="mdi-magnify" label="Pesquisar" single-line
                         hide-details>
                     </v-text-field>
                 </v-card-title>
@@ -16,6 +16,11 @@
                         <!-- <span>
                             <v-icon @click.prevent="confirmeExclusao(item)">mdi-delete</v-icon>
                         </span> -->
+                    </template>
+                    <!-- eslint-disable-next-line -->
+                    <template v-slot:item.ativo_status.descricao="{ item }">
+                        <div :class="['justfy-center', corStatus(item.ativo_status_id)]">{{ item.ativo_status.descricao
+                        }}</div>
                     </template>
                     <!-- eslint-disable-next-line -->
                     <template v-slot:item.id="{ item }">
@@ -33,7 +38,7 @@
             </v-card>
         </v-col>
 
-        <empresaCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
+        <usuarioCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
             @atualizarListagem="atualizarListagem" @exibSnack="exibSnack" :isEdit="isEdit" :item="payload" />
 
 
@@ -48,14 +53,14 @@
 </template>
 
 <script>
-import { empresaModel } from '~/models/EmpresaModel'
+import { usuarioModel } from '~/models/UsuarioModel'
 export default {
     async asyncData({ $axios }) {
         let listagem = []
         try {
-            const resposta = await $axios.$get('/empresas')
+            const resposta = await $axios.$get('/usuarios')
             if (!resposta?.erro) {
-                listagem = resposta.dados.registros
+                listagem = resposta.dados
             } else {
                 listagem = []
             }
@@ -65,7 +70,8 @@ export default {
             return { listagem }
         }
     },
-    name: 'proprietarios',
+    name: 'usuarios',
+
     data() {
         return {
             itemSelect: null,
@@ -77,14 +83,14 @@ export default {
             headers: [
                 { text: 'Código', value: 'id', align: 'left', margin: '12px' },
                 { text: 'Nome', value: 'nome', align: 'left' },
-                { text: 'Telefone', value: 'telefone', align: 'center' },
-                { text: 'Email', value: 'email', align: 'center' },
-                { text: 'Contato', value: 'contato_nome', align: 'center' },
-                { text: 'Tel. Contato', value: 'contato_tel', align: 'center' },
+                { text: 'Nível', value: 'user_tipo.descricao', align: 'left' },
+                { text: 'Empresa', value: 'empresas.nome', align: 'left' },
+                { text: 'Telefone', value: 'tel', align: 'center' },
+                { text: 'Login', value: 'login', align: 'center' },
                 { text: 'Ações', value: 'actions', sortable: false, align: 'right' },
             ],
             exibLista: false,
-            payload: empresaModel(),
+            payload: usuarioModel(),
             snack: {
                 active: false,
                 text: "teste",
@@ -102,12 +108,13 @@ export default {
         }
     },
     methods: {
+
         corStatus(id) {
             if (id == 1) return 'green--text'
             if (id == 2) return 'red--text'
         },
         novoItem() {
-            this.payload = empresaModel()
+            this.payload = usuarioModel()
             this.isEdit = false
             this.exibCadastro = true
         },
@@ -122,9 +129,10 @@ export default {
         },
         async atualizarListagem() {
             try {
-                const resposta = await this.$axios.$get('/empresas/')
+                const resposta = await this.$axios.$get('/usuarios')
+
                 if (!resposta?.erro) {
-                    this.listagem = resposta.dados.registros
+                    this.listagem = resposta.dados
                 } else {
                     this.listagem = []
                 }
@@ -133,11 +141,12 @@ export default {
                 console.log({ error });
             }
         },
+
         async exibirItem(item) {
             const { id } = item
             try {
-                const empresa = await this.$axios.$get(`/empresa/${id}`)
-                this.payload = empresaModel(empresa)
+                const payload = await this.$axios.$get(`/usuario/${id}`)
+                this.payload = usuarioModel(payload.dados)
                 this.exibCadastro = true
                 this.isEdit = true
             } catch (error) {
@@ -145,7 +154,7 @@ export default {
             }
         },
         cancelar() {
-            this.payload = empresaModel()
+            this.payload = usuarioModel()
             this.exibCadastro = false
         }
     }

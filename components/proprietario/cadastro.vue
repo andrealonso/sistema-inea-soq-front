@@ -114,14 +114,7 @@ export default {
                 this.limparEndereco()
             }
         },
-        limparEndereco() {
-            this.item.rua = null
-            this.item.bairro = null
-            this.item.cidade = null
-            this.item.uf = null
-        },
-        formValido() {
-        },
+
         corStatus(id) {
             if (id == 1) return 'green--text'
             if (id == 2) return 'red--text'

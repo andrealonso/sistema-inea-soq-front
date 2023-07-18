@@ -7,7 +7,7 @@ export default (context, inject) => {
     })
     inject('formatData', (data) => {
         if (moment(data, 'YYYY-MM-DD').isValid()) {
-            return moment(data).format('DD/MM/YYYY')
+            return moment.utc(data).format('DD/MM/YYYY')
         } else {
             return ''
         }

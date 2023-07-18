@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="open" persistent>
         <v-card>
-            <v-card-title class="green lighten-1 white--text">Cadastro de usuário</v-card-title>
+            <v-card-title class="green lighten-1 white--text">Editar perfil</v-card-title>
             <v-card-text>
                 <v-form ref="form" v-model="valid" lazy-validation>
                     <v-container>
@@ -19,7 +19,7 @@
                                     outlined dense v-mask="['(##)#####-####']"></v-text-field>
                             </v-col>
 
-                            <v-col cols="12" sm="6" md="3">
+                            <!-- <v-col cols="12" sm="6" md="3">
                                 <v-autocomplete :rules="[rules.required]" label="Tipo de usuário" outlined auto-select-first
                                     dense :items="tiposUser" :item-text="item => item.descri" :item-value="item => item.id"
                                     v-model="item.user_tipo_id" :disabled="desativarCampoTipo" @change="alterandoTipoUser">
@@ -34,7 +34,7 @@
                             <v-col cols="12" sm="6" md="4">
                                 <v-text-field type="email" :rules="[rules.email, rules.required]" v-model="item.login"
                                     label="Login" outlined dense></v-text-field>
-                            </v-col>
+                            </v-col> -->
 
                             <v-col cols="12" sm="4">
                                 <v-text-field type="password" v-model="item.senha" label="Senha" outlined dense
@@ -168,9 +168,6 @@ export default {
 
                 return false
             }
-
-
-
             return true
         },
         corStatus(id) {
@@ -191,7 +188,6 @@ export default {
             if (!this.item.senha && !this.isEdit) {
                 qtdErros++
                 this.formErros.senha = 'Cadastre uma senha!'
-                console.log(this.item?.senha?.length);
             } else {
                 if (this.item.senha && this.item.senha.length < 6) {
                     qtdErros++
@@ -224,7 +220,6 @@ export default {
             if (!this.isEdit) {
                 this.createItem(item)
             } else {
-
                 this.updateItem(item)
             }
 
@@ -244,6 +239,7 @@ export default {
         async updateItem(item) {
             try {
                 const user = await this.$axios.$put(`/usuario/${item.id}`, item)
+                this.$store.commit('user/STORE_PERFIL', item)
                 this.exibSnack('Registro salvo com sucesso!', 'success')
                 this.$emit('atualizarListagem')
                 this.$emit('close')
@@ -262,7 +258,6 @@ export default {
                 this.$emit('close')
                 this.exibSnack('Registro exluído com sucesso!', 'success')
             } catch (erro) {
-
                 this.exibSnack('Não foi possível excluir o registro!', 'error')
                 console.log(erro);
             }

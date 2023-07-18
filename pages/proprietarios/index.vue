@@ -5,7 +5,8 @@
                 <v-card-title>
                     <h4>Lista de Proprietários</h4>
                     <v-spacer></v-spacer>
-                    <v-text-field v-model="search" append-icon="mdi-magnify" label="Pesquisar" single-line hide-details>
+                    <v-text-field dense outlined v-model="search" append-icon="mdi-magnify" label="Pesquisar" single-line
+                        hide-details>
                     </v-text-field>
                 </v-card-title>
                 <v-data-table :headers="headers" :items="listagem" :search="search" dense mobile-breakpoint="400">
@@ -70,7 +71,7 @@ export default {
         }
     },
     name: 'proprietarios',
-    middleware: 'auth',
+
     data() {
         return {
             itemSelect: null,

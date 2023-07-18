@@ -14,13 +14,13 @@ export function usuarioModel(payload) {
         }
     } else {
         return {
-            id: payload.id,
+            id: null,
             nome: "",
             cpf: null,
             tel: null,
             login: null,
             senha: null,
-            ativo_status_id: null,
+            ativo_status_id: 1,
             user_tipo_id: null,
             empresas_id: null,
         }
