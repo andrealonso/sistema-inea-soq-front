@@ -2,21 +2,21 @@
     <v-dialog v-model="dlgConfirme" max-width="320" persistent>
         <v-card>
             <v-card-title :class="['text-center', cor || 'primary']">
-                <span>{{ titulo }}</span>
+                <span class="text-subtitle-2">{{ titulo }}</span>
             </v-card-title>
 
-            <v-card-text class="font-weight-black">
+            <v-card-text class="text-body-2">
                 {{ texto }}
             </v-card-text>
 
             <v-card-actions>
                 <v-spacer></v-spacer>
 
-                <v-btn color="green darken-1" text @click="fnNao">
+                <v-btn color="grey darken-4" text @click="fnNao">
                     Não
                 </v-btn>
 
-                <v-btn color="green darken-1" text @click="fnSim">
+                <v-btn color="grey darken-4" text @click="fnSim">
                     Sim
                 </v-btn>
             </v-card-actions>

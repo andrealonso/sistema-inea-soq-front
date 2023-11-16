@@ -7,7 +7,7 @@
             <v-card-text>
                 <v-form ref="form" v-model="valid" lazy-validation>
                     <v-container>
-                        <v-row>
+                        <v-row dense>
                             <v-col cols="12" sm="6" md="6">
                                 <v-text-field :rules="[rules.required, rules.counter]" v-model="item.nome" label="Nome"
                                     outlined dense required validate-on-blur></v-text-field>
@@ -58,6 +58,9 @@
                             <v-col cols="12" sm="6" md="2">
                                 <v-text-field :rules="[rules.required]" v-model="item.uf" label="UF" outlined
                                     dense></v-text-field>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-textarea outlined dense v-model="item.obs" label="Obsevações"></v-textarea>
                             </v-col>
 
                             <v-col cols="12" sm="6" md="12">

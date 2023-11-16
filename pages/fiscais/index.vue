@@ -45,7 +45,6 @@
         <DialogConfirmacao v-if="dlgConfirme" :dlg-confirme="dlgConfirme" @nao="dlgConfirme = false" @sim="excluirItem"
             :cor="'red--text lighten-2'" titulo="Exclusão de registro."
             :texto="'Tem certeza que deseja excluir este registro?'" />
-
         <snackbar v-if="snack.active" :snack="snack" @close="snack.active = false" />
 
     </v-row>

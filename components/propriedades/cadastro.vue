@@ -7,7 +7,7 @@
             <v-card-text>
                 <v-form ref="form" v-model="valid" lazy-validation>
                     <v-container>
-                        <v-row>
+                        <v-row dense>
                             <v-col cols="12" sm="6" md="6">
                                 <v-text-field :rules="[rules.required, rules.counter]" v-model="item.nome" label="Nome"
                                     outlined dense required validate-on-blur></v-text-field>
@@ -29,12 +29,12 @@
                             </v-col>
 
                             <v-col cols="12" sm="6" md="6">
-                                <v-text-field validate-on-blur type="number" @blur="checkArea"
+                                <v-text-field validate-on-blur type="number" @blur="checkArea" @mousewheel.prevent.stop=""
                                     :rules="[rules.required, rules.checkArea]" v-model="item.area" label="Area total"
                                     outlined dense hide-spin-buttons></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
-                                <v-text-field validate-on-blur type="number" @blur="checkArea"
+                                <v-text-field validate-on-blur type="number" @blur="checkArea" @mousewheel.prevent.stop=""
                                     :rules="[rules.required, rules.checkArea]" v-model="item.area_cana"
                                     label="Area com cana" outlined hide-spin-buttons dense></v-text-field>
                             </v-col>
@@ -45,7 +45,7 @@
                                 <v-text-field v-mask="['#####-###']" v-model="item.cep" label="CEP" outlined dense
                                     @blur="consultaCep"></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="6" md="8">
+                            <v-col cols="12" sm="6" md="5">
                                 <v-text-field :rules="[rules.required]" v-model="item.rua" label="Rua" outlined
                                     dense></v-text-field>
                             </v-col>
@@ -53,11 +53,12 @@
                                 <v-text-field :rules="[rules.required]" ref="inputNum" v-model="item.num" label="Núm."
                                     outlined dense></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="6" md="5">
+                            <v-col cols="12" sm="6" md="3">
                                 <v-text-field :rules="[rules.required]" v-model="item.bairro" label="Bairro" outlined
                                     dense></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="6" md="5">
+
+                            <v-col cols="12" sm="6" md="4">
                                 <v-text-field :rules="[rules.required]" v-model="item.cidade" label="Cidade" outlined
                                     dense></v-text-field>
                             </v-col>
@@ -65,9 +66,17 @@
                                 <v-text-field :rules="[rules.required]" v-model="item.uf" label="UF" outlined
                                     dense></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="6" md="5">
+                            <v-col cols="12" sm="6" md="6">
                                 <v-text-field v-model="item.geolocal" label="Geolocalização - Link Google Maps" outlined
                                     dense></v-text-field>
+                            </v-col>
+
+                            <v-col cols="12">
+                                <v-textarea outlined dense v-model="item.obs" label="Obsevações"></v-textarea>
+                            </v-col>
+                            <v-col cols="12">
+                                <documentoLista v-if="exibListDocs" :isEdit="isEdit" destinatario="propriedades_id"
+                                    :destId="`${item.id || 0}`" />
                             </v-col>
 
                             <!-- <pre>{{ item }}</pre> -->
@@ -78,7 +87,9 @@
             </v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="success" elevation="2" outlined dense @click.prevent.stop="salvarItem(item)">Salvar
+                <v-btn color="success" elevation="2" outlined dense @click.prevent.stop="salvar">Salvar
+                </v-btn>
+                <v-btn color="success" elevation="2" outlined dense @click.prevent.stop="salvarSair">Salvar e sair
                 </v-btn>
                 <v-btn color="secondary" elevation="2" outlined dense @click.prevent.stop="cancelarRegistro">
                     Cancelar</v-btn>
@@ -102,6 +113,7 @@ export default {
             valid: true,
             tituloPagina: 'Cadastro de Propriedades',
             exibEndereco: true,
+            exibListDocs: true,
             deleteConfirme: false,
             itemOld: { ...this.item },
             status: [
@@ -154,20 +166,28 @@ export default {
             if (id == 1) return 'green--text'
             if (id == 2) return 'red--text'
         },
-        async salvarItem(item) {
+        salvar() {
+            this.salvarItem()
+        },
+        salvarSair() {
+            this.salvarItem('sair')
+        },
+        async salvarItem(sair) {
             if (!this.$refs.form.validate()) {
                 return
             }
             if (this.foiAlterado()) {
                 if (!this.isEdit) {
-                    this.createItem(item)
+                    this.createItem(this.item)
                 } else {
-                    this.updateItem(item)
+                    this.updateItem(this.item)
                 }
             } else {
-                this.$emit('close')
                 this.exibSnack('Registro salvo com sucesso!', 'success')
+
             }
+            if (sair)
+                this.$emit('close')
 
         },
         foiAlterado() {
@@ -180,7 +200,6 @@ export default {
                 delete item.id
                 await this.$axios.$post(`/propriedade`, item,)
                 this.$emit('atualizarListagem')
-                this.$emit('close')
                 this.exibSnack('Registro salvo com sucesso!', 'success')
             } catch (error) {
                 this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
@@ -191,7 +210,6 @@ export default {
             try {
                 await this.$axios.$put(`/propriedade/${item.id}`, item)
                 this.$emit('atualizarListagem')
-                this.$emit('close')
                 this.exibSnack('Registro salvo com sucesso!', 'success')
             } catch (error) {
                 this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')

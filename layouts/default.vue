@@ -52,6 +52,10 @@
 import Vue, { onMounted } from 'vue';
 import { usuarioModel } from '~/models/UsuarioModel'
 const eventBus = new Vue()
+
+// $('input[type=number]').on('mousewheel', function(e) {
+//   $(e.target).blur();
+// });
 export default {
   name: 'DefaultLayout',
   data() {
@@ -81,7 +85,6 @@ export default {
     }
 
   },
-
   computed: {
     nomeUser() {
       let nome = this.$store.state.user.nome

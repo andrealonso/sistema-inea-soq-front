@@ -84,8 +84,6 @@ export default {
     props: ['item', 'isEdit', 'open', 'listaSelecao'],
     beforeMount() {
         !this.item.empresas_id ? this.item.empresas_id = this.$store.state.user.empresas_id : null
-
-
     },
     data() {
         return {

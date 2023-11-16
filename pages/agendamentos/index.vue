@@ -1,5 +1,6 @@
 <template>
     <v-row justify="center" class="mb-4">
+
         <v-col cols="12" v-if="exibLista">
             <!-- Listagem -->
             <v-card class="p-3">
@@ -47,6 +48,9 @@
                         {{ item.data_fim | formatData }}
                     </template>
                 </v-data-table>
+
+
+
             </v-card>
         </v-col>
 
@@ -200,6 +204,7 @@ export default {
     name: 'propriedades',
     data() {
         return {
+            exibTeste: false,
             filtro: {
                 aplicado: false,
                 propriedades_id: null,

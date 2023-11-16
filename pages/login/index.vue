@@ -49,8 +49,8 @@ export default {
             valid: true,
             logado: false,
             userData: {
-                login: 'andrealonso@gmail.com',
-                senha: '123456'
+                login: '',
+                senha: ''
             },
             snack: {
                 active: false,

@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[19],{767:function(e,n,o){"use strict";o.r(n);var t={name:"acessonegado",layout:"vazio",data:function(){return{}}},c=o(58),component=Object(c.a)(t,(function(){return(0,this._self._c)("h1",[this._v("Acesso Negado")])}),[],!1,null,"0dfee650",null);n.default=component.exports}}]);

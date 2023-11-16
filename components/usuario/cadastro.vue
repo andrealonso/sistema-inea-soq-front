@@ -82,7 +82,7 @@ import moment from 'moment'
 
 export default {
     props: ['item', 'isEdit', 'open'],
-    async beforeMount() {
+    async mounted() {
         this.configTipoUser(this.$store.state.user)
         this.alterandoTipoUser()
         const { dados } = await this.$axios.$get('/empresas')
@@ -118,13 +118,13 @@ export default {
             tiposUser: []
         }
     },
-    computed: {
-
-
-    },
     methods: {
         alterandoTipoUser() {
-            if (this.item.user_tipo_id !== 3 && this.item.user_tipo_id !== 5) {
+            if (this.$store.state.user.user_tipo_id > 2) {
+                this.desativarCampoEmpresa = true
+                return
+            }
+            if (this.item.user_tipo_id === 4 || this.item.user_tipo_id === 2) {
                 this.desativarCampoEmpresa = true
                 this.item.empresas_id = null
             } else {
@@ -165,12 +165,8 @@ export default {
                 ]
                 this.desativarCampoEmpresa = true
                 this.item.empresas_id = user.empresas_id
-
                 return false
             }
-
-
-
             return true
         },
         corStatus(id) {
