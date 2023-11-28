@@ -10,11 +10,11 @@
                         <v-row>
                             <v-col cols="12" sm="6" md="8">
                                 <v-autocomplete :rules="[rules.required]" label="Propriedades" outlined auto-select-first
-                                    dense :items="listaSelecao.propriedades" :item-text="item => item.nome"
-                                    :item-value="item => item.id" v-model="item.propriedades_id">
+                                    dense :items="listaSelecao.propriedades" :item-text="propriedade => propriedade.nome"
+                                    :item-value="propriedade => propriedade.id" v-model="item.propriedades_id"
+                                    @change="calcAreaCanaTotal">
                                 </v-autocomplete>
                             </v-col>
-
                             <v-col cols="12" sm="6" md="2">
                                 <v-menu v-model="menu1" :close-on-content-click="false" max-width="290">
                                     <template v-slot:activator="{ on, attrs }">
@@ -38,26 +38,23 @@
 
                             <v-col cols="12" sm="6" md="2">
                                 <v-text-field type="number" :rules="[rules.required]" v-model="item.area_queima"
-                                    label="Área queima" outlined dense hide-spin-buttons></v-text-field>
+                                    label="Área queima" outlined dense hide-spin-buttons
+                                    @blur="calcAreaCanaTotal"></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="2">
                                 <v-text-field :rules="[rules.required]" v-model="item.talhao" label="Talhão" outlined
                                     dense></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="8">
-                                <v-autocomplete label="Empresas" outlined auto-select-first dense
+                                <v-autocomplete :rules="[rules.required]" label="Empresas" outlined auto-select-first dense
                                     :items="listaSelecao.empresas" :item-text="item => item.nome"
                                     :item-value="item => item.id" v-model="item.empresas_id"
                                     :disabled="desativarCampoEmpresas">
                                 </v-autocomplete>
                             </v-col>
 
-
-
                             <!-- <pre>{{ item }}</pre> -->
                         </v-row>
-                        <dialogConfirme @sim="deleteItem(item)" @nao="deleteConfirme = false" :dlg-confirme="deleteConfirme"
-                            texto="Tem certeza que deseja excluir este registro?" cor="error" titulo="Confirme exclusão!" />
                     </v-container>
                 </v-form>
             </v-card-text>
@@ -67,13 +64,14 @@
                 </v-btn>
                 <v-btn color="secondary" elevation="2" outlined dense @click.prevent.stop="cancelarRegistro">
                     Cancelar</v-btn>
-                <v-btn color="error" elevation="2" outlined dense @click.prevent.stop="deleteConfirme = true"
+                <v-btn color="error" elevation="2" outlined dense @click.prevent.stop="deleteItem"
                     :disabled="!isEdit">Excluir
                 </v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
 
         </v-card>
+
     </v-dialog>
 </template>
 
@@ -87,6 +85,8 @@ export default {
     },
     data() {
         return {
+            exibConfirme: false,
+            areCanaTotal: null,
             parceiraInea: null,
             menu1: false,
             menu2: false,
@@ -111,6 +111,7 @@ export default {
         }
     },
     computed: {
+
         desativarCampoEmpresas() {
             if (this.$store.state.user.user_tipo_id === 1 || this.$store.state.user.parceira_inea)
                 return false
@@ -127,6 +128,21 @@ export default {
         }
     },
     methods: {
+        teste() {
+            console.log('teste');
+        },
+        calcAreaCanaTotal(id) {
+            if (this.item.propriedades_id > 0 && this.item.area_queima > 0) {
+                const { propriedades } = this.listaSelecao
+                const index = propriedades.findIndex(item => item.id === this.item.propriedades_id)
+                const areComCana = parseFloat(propriedades[index].area_cana)
+                const areaQuaima = parseFloat(this.item.area_queima)
+                console.log(areComCana > areaQuaima)
+                if (!(areComCana > areaQuaima))
+                    alert('A área da queima não pode ser maior que a área com cana!')
+            }
+
+        },
         dataInicioMenor(data) {
             // console.log('Inicio ', moment(data, 'DD-MM-YYYY').format('L'));
             // console.log('Inicio ', this.item.data_inicio);
@@ -161,7 +177,7 @@ export default {
                 }
             } else {
                 this.$emit('close')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
+                this.$alertaSucesso()
             }
 
         },
@@ -176,9 +192,9 @@ export default {
                 await this.$axios.$post(`/agendamento`, item,)
                 this.$emit('atualizarListagem')
                 this.$emit('close')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
+                this.$alertaSucesso()
             } catch (error) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
+                this.$alertaErro()
                 console.log(error);
             }
         },
@@ -187,24 +203,27 @@ export default {
                 await this.$axios.$put(`/agendamento/${item.id}`, item)
                 this.$emit('atualizarListagem')
                 this.$emit('close')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
+                this.$alertaSucesso()
             } catch (error) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
+                this.$alertaErro()
                 console.log(error);
             }
         },
         cancelarRegistro() {
             this.$emit('close')
         },
-        async deleteItem(item) {
-            try {
-                await this.$axios.$delete(`/agendamento/${item.id}`)
-                this.$emit('atualizarListagem')
-                this.$emit('close')
-                this.exibSnack('Registro exluído com sucesso!', 'success')
-            } catch (error) {
-                this.exibSnack('Não foi possível excluir o registro!', 'error')
-                console.log(error);
+
+        async deleteItem() {
+            if (await this.$confirmaExclusao()) {
+                try {
+                    await this.$axios.$delete(`/agendamento/${this.item.id}`)
+                    this.$emit('atualizarListagem')
+                    this.$emit('close')
+                    this.$alertaSucesso('Registro exluído com sucesso!')
+                } catch (error) {
+                    this.$alertaErro('Não foi possível excluir este registro!')
+                    console.log(error);
+                }
             }
         },
 

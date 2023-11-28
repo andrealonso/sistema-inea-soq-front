@@ -55,7 +55,6 @@
         </v-col>
 
         <v-col cols="12" v-if="!exibLista">
-
             <v-card class="">
                 <v-card-title>
                     <h4>Lista de Agendamentos</h4>
@@ -169,7 +168,6 @@
             :texto="'Tem certeza que deseja excluir este registro?'" />
 
         <snackbar v-if="snack.active" :snack="snack" @close="snack.active = false" />
-
     </v-row>
 </template>
 
@@ -224,7 +222,7 @@ export default {
                 { text: 'Código', value: 'id', align: 'left', margin: '12px' },
                 { text: 'Propriedade', value: 'propriedades.nome', align: 'left', margin: '12px' },
                 { text: 'Área', value: 'area_queima', align: 'left' },
-                { text: 'Talhão', value: 'talhao.nome', align: 'center' },
+                { text: 'Talhão', value: 'talhao', align: 'center' },
                 { text: 'Data do início', value: 'data_inicio', align: 'center' },
                 { text: 'Data do fim', value: 'data_fim', align: 'center' },
                 { text: 'Empresa', value: 'empresas.nome', align: 'center' },
@@ -262,6 +260,9 @@ export default {
         }
     },
     methods: {
+        teste() {
+            this.$alertaErro()
+        },
         corStatus(id) {
             if (id == 1) return 'green--text'
             if (id == 2) return 'red--text'
@@ -302,9 +303,11 @@ export default {
         },
         async exibirItem(item) {
             const { id } = item
+            console.log(item);
             try {
                 const resposta = await this.$axios.$get(`/agendamento/${id}`)
-                const { empresas, propriedades, agenda } = resposta
+                console.log(resposta);
+                const { empresas, agenda, propriedades } = resposta
                 this.listaSelecao = { empresas, propriedades }
                 this.payload = agendaModel(agenda)
                 this.exibCadastro = true
@@ -323,6 +326,8 @@ export default {
             this.listaSelecao = { empresas, propriedades }
             this.exibFiltro = true
         }
+        // Alertas
+
     }
 }
 

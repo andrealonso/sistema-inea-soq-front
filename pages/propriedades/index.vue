@@ -35,7 +35,7 @@
 
         <propriedadesCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
             @atualizarListagem="atualizarListagem" @exibSnack="exibSnack" :isEdit="isEdit" :item="payload"
-            :lista-selecao="listaSelecao" />
+            :lista-selecao="listaSelecao" @alternarModoEdicao="alternarModoEdicao" />
 
 
         <DialogLoading v-if="isLoading" :is-loading="isLoading" :cor="'purple lighten-1'" :texto="'Atualizando dados...'" />
@@ -153,6 +153,9 @@ export default {
         cancelar() {
             this.payload = propriedadeModel()
             this.exibCadastro = false
+        },
+        alternarModoEdicao(habilitar) {
+            this.isEdit = habilitar ? true : false
         }
     }
 }

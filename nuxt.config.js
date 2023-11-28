@@ -32,6 +32,7 @@ export default {
   plugins: [
     "@/plugins/mask",
     "@/plugins/moment",
+    "@/plugins/alertas",
     "@/plugins/validacoes",
     "@/plugins/buscaCep",
     "@/plugins/axios",

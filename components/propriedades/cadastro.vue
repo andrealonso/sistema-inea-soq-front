@@ -18,13 +18,13 @@
                             <v-col cols="12" sm="6" md="6">
                                 <v-autocomplete label="Proprietario" outlined auto-select-first dense
                                     :items="listaSelecao.proprietarios" :item-text="item => item.nome"
-                                    :item-value="item => item.id" v-model="item.proprietario_id">
+                                    :item-value="item => item.id" v-model="item.proprietario_id" :rules="[rules.required]">
                                 </v-autocomplete>
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
                                 <v-autocomplete label="Representante" outlined auto-select-first dense
                                     :items="listaSelecao.representantes" :item-text="item => item.nome"
-                                    :item-value="item => item.id" v-model="item.representante_id">
+                                    :item-value="item => item.id" v-model="item.representante_id" :rules="[rules.required]">
                                 </v-autocomplete>
                             </v-col>
 
@@ -98,8 +98,6 @@
                 </v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
-            <dialogConfirme @sim="deleteItem(item)" @nao="deleteConfirme = false" :dlg-confirme="deleteConfirme"
-                texto="Tem certeza que deseja excluir este registro?" cor="error" titulo="Confirme exclusão!" />
         </v-card>
     </v-dialog>
 </template>
@@ -135,6 +133,7 @@ export default {
         }
     },
     methods: {
+
         checkArea() {
             const total = Number(this.item.area)
             const cana = Number(this.item.area_cana)
@@ -198,9 +197,11 @@ export default {
         async createItem(item) {
             try {
                 delete item.id
-                await this.$axios.$post(`/propriedade`, item,)
+                const { dados } = await this.$axios.$post(`/propriedade`, item,)
                 this.$emit('atualizarListagem')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
+                this.$emit('alternarModoEdicao', 1)
+                this.item.id = dados.id
+                this.$alertaSucesso()
             } catch (error) {
                 this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
                 console.log(error);
@@ -208,11 +209,13 @@ export default {
         },
         async updateItem(item) {
             try {
-                await this.$axios.$put(`/propriedade/${item.id}`, item)
+                const { dados } = await this.$axios.$put(`/propriedade/${item.id}`, item)
                 this.$emit('atualizarListagem')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
+                this.$emit('alternarModoEdicao', 1)
+                this.item.id = dados.id
+                this.$alertaSucesso()
             } catch (error) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
+                this.$alertaErro()
                 console.log(error);
             }
         },
@@ -220,21 +223,18 @@ export default {
             this.$emit('close')
         },
         async deleteItem(item) {
-            try {
-                await this.$axios.$delete(`/propriedade/${item.id}`)
-                this.$emit('atualizarListagem')
-                this.$emit('close')
-                this.exibSnack('Registro exluído com sucesso!', 'success')
-            } catch (error) {
-                this.exibSnack('Não foi possível excluir o registro!', 'error')
-                console.log(error);
+            if (await this.$confirmaExclusao()) {
+                try {
+                    await this.$axios.$delete(`/propriedade/${item.id}`)
+                    this.$emit('atualizarListagem')
+                    this.$emit('close')
+                    this.$alertaSucesso()
+                } catch (error) {
+                    this.$alertaErro('Não foi possível excluir o registro!')
+                    console.log(error);
+                }
             }
         },
-
-        exibSnack(texto, cor) {
-            this.$emit('exibSnack', texto, cor)
-        }
-
 
     }
 }
