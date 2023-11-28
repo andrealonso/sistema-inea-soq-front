@@ -14,7 +14,7 @@
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
                                 <v-text-field :rules="[rules.required, rules.cpfValido]" validate-on-blur v-model="item.cpf"
-                                    label="CPF" outlined dense v-mask="['###.###.###-##', '##.###.###/####-##']"
+                                    label="CPF/CNPJ" outlined dense v-mask="['###.###.###-##', '##.###.###/####-##']"
                                     required></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="6">

@@ -38,8 +38,9 @@
             </v-card>
         </v-col>
 
-        <representanteCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
-            @atualizarListagem="atualizarListagem" @exibSnack="exibSnack" :isEdit="isEdit" :item="payload" />
+        <representanteCadastro v-if="exibCadastro" @alternarModoEdicao="alternarModoEdicao" :open="exibCadastro"
+            @close="exibCadastro = false" @cancelar="cancelar" @atualizarListagem="atualizarListagem" @exibSnack="exibSnack"
+            :isEdit="isEdit" :item="payload" />
 
 
         <DialogLoading v-if="isLoading" :is-loading="isLoading" :cor="'purple lighten-1'" :texto="'Atualizando dados...'" />
@@ -98,6 +99,9 @@ export default {
         }
     },
     filters: {
+        alternarModoEdicao(habilitar) {
+            this.isEdit = habilitar ? true : false
+        },
         zeroLeft(num) {
             return (num).toLocaleString('en-US', {
                 minimumIntegerDigits: 6,

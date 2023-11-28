@@ -31,8 +31,8 @@ export default (context, inject) => {
     })
     inject('confirmaExclusao', async (texto) => {
         const resp = await Swal.fire({
-            title: "Confirme exclusão!",
-            text: texto ? texto : "Tem ceteza que deseja excluir este registro",
+            title: "Confirme a exclusão!",
+            text: texto ? texto : "Tem ceteza que deseja excluir este registro?",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
