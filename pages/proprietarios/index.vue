@@ -39,7 +39,8 @@
         </v-col>
 
         <proprietarioCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
-            @atualizarListagem="atualizarListagem" @exibSnack="exibSnack" :isEdit="isEdit" :item="payload" />
+            @atualizarListagem="atualizarListagem" @exibSnack="exibSnack" :isEdit="isEdit" :item="payload"
+            @alternarModoEdicao="alternarModoEdicao" />
 
 
         <DialogLoading v-if="isLoading" :is-loading="isLoading" :cor="'purple lighten-1'" :texto="'Atualizando dados...'" />
@@ -106,6 +107,9 @@ export default {
         }
     },
     methods: {
+        alternarModoEdicao(habilitar) {
+            this.isEdit = habilitar ? true : false
+        },
         corStatus(id) {
             if (id == 1) return 'green--text'
             if (id == 2) return 'red--text'

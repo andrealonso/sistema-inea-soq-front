@@ -14,7 +14,8 @@
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
                                 <v-text-field :rules="[rules.required, rules.cpfValido]" validate-on-blur v-model="item.cpf"
-                                    label="CPF" outlined dense v-mask="['###.###.###-##']" required></v-text-field>
+                                    label="CPF" outlined dense v-mask="['###.###.###-##', '##.###.###/####-##']"
+                                    required></v-text-field>
                             </v-col>
                             <v-col cols="12" sm="6" md="6">
                                 <v-text-field :rules="[rules.required]" validate-on-blur v-model="item.telefone"
@@ -101,7 +102,7 @@ export default {
                     const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
                     return pattern.test(value) || 'Email inválido'
                 },
-                cpfValido: value => this.$cpfValido(value) || 'CPF inválido!',
+                cpfValido: value => this.testeCpfCnpj(value) || 'CPF ou CNPJ inválido!',
                 senhaDiferente: value => this.comparaSenha(value) || 'Senha não confere! Repita a mesma senha.'
             },
 
@@ -111,7 +112,14 @@ export default {
 
     },
     methods: {
-
+        testeCpfCnpj(num) {
+            console.log(num.length);
+            if (num.length > 14) {
+                return this.$cnpjValido(num)
+            } else {
+                return this.$cpfValido(num)
+            }
+        },
         async consultaCep() {
             const result = await this.$buscaCep(this.item.cep)
             if (result) {
@@ -121,7 +129,7 @@ export default {
                 this.item.uf = result?.uf || null
                 this.$refs.inputNum.focus()
             } else {
-                this.exibSnack('CEP inválido ou não encontrado!', 'error')
+                this.$alertaErro('CEP inválido ou não encontrado!')
                 this.limparEndereco()
             }
         },
@@ -147,8 +155,7 @@ export default {
                     this.updateItem(this.item)
                 }
             } else {
-                this.$emit('close')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
+                this.$alertaSucesso()
             }
             if (sair)
                 this.$emit('close')
@@ -161,44 +168,50 @@ export default {
         async createItem(item) {
             try {
                 delete item.id
-                await this.$axios.$post(`/proprietario`, item,)
+                const { dados } = await this.$axios.$post(`/proprietario`, item,)
                 this.$emit('atualizarListagem')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
+                this.$emit('alternarModoEdicao', 1)
+                this.item.id = dados.id
+                this.$alertaSucesso()
             } catch (error) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
+                this.$alertaErro()
                 console.log(error);
             }
         },
         async updateItem(item) {
             try {
-                await this.$axios.$put(`/proprietario/${item.id}`, item)
+                const { dados } = await this.$axios.$put(`/proprietario/${item.id}`, item)
                 this.$emit('atualizarListagem')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
+                this.$emit('alternarModoEdicao', 1)
+                this.item.id = dados.id
+                this.$alertaSucesso()
             } catch (error) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
+                this.$alertaErro()
                 console.log(error);
             }
         },
         cancelarRegistro() {
             this.$emit('close')
         },
+        limparEndereco() {
+            this.item.rua = null
+            this.item.bairro = null
+            this.item.cidade = null
+            this.item.uf = null
+        },
         async deleteItem(item) {
-            try {
-                await this.$axios.$delete(`/proprietario/${item.id}`)
-                this.$emit('atualizarListagem')
-                this.$emit('close')
-                this.exibSnack('Registro exluído com sucesso!', 'success')
-            } catch (error) {
-                this.exibSnack('Não foi possível excluir o registro!', 'error')
-                console.log(error);
+            if (await this.$confirmaExclusao()) {
+                try {
+                    await this.$axios.$delete(`/proprietario/${item.id}`)
+                    this.$emit('atualizarListagem')
+                    this.$emit('close')
+                    this.$alertaSucesso()
+                } catch (error) {
+                    this.$alertaErro('Não foi possível excluir o registro!')
+                    console.log(error);
+                }
             }
         },
-
-        exibSnack(texto, cor) {
-            this.$emit('exibSnack', texto, cor)
-        }
-
-
     }
 }
 </script>

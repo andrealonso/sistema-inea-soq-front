@@ -150,7 +150,7 @@ export default {
                 this.item.uf = result?.uf || null
                 this.$refs.inputNum.focus()
             } else {
-                this.exibSnack('CEP inválido ou não encontrado!', 'error')
+                this.$alertaErro('CEP inválido ou não encontrado!')
                 this.limparEndereco()
             }
 
@@ -182,7 +182,7 @@ export default {
                     this.updateItem(this.item)
                 }
             } else {
-                this.exibSnack('Registro salvo com sucesso!', 'success')
+                this.$alertaSucesso()
 
             }
             if (sair)
@@ -203,7 +203,7 @@ export default {
                 this.item.id = dados.id
                 this.$alertaSucesso()
             } catch (error) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
+                this.$alertaErro()
                 console.log(error);
             }
         },

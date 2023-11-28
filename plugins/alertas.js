@@ -1,7 +1,7 @@
 import Swal from 'sweetalert2'
 
 export default (context, inject) => {
-    const timer = '4000'
+    const timer = '2000'
     const animation = false
     inject('alertaSucesso', (texto) => {
         Swal.fire({
