@@ -1,7 +1,11 @@
 <template>
     <v-dialog v-model="open" persistent>
         <v-card>
-            <v-card-title class="green lighten-1 white--text">Cadastro de usuário</v-card-title>
+            <v-card-title class="green lighten-1 white--text">
+                Cadastro de usuário
+                <v-spacer></v-spacer>
+                <v-btn icon large @click.prevent.stop="cancelarRegistro" color="white">X</v-btn>
+            </v-card-title>
             <v-card-text>
                 <v-form ref="form" v-model="valid" lazy-validation>
                     <v-container>

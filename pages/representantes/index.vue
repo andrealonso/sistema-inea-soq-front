@@ -9,7 +9,8 @@
                         hide-details>
                     </v-text-field>
                 </v-card-title>
-                <v-data-table :headers="headers" :items="listagem" :search="search" dense mobile-breakpoint="400">
+                <v-data-table :footer-props="listFooterOpcoes" :headers="headers" :items="listagem" :search="search" dense
+                    mobile-breakpoint="400">
                     <!-- eslint-disable-next-line -->
                     <template v-slot:item.actions="{ item }">
                         <v-icon @click.prevent="exibirItem(item)">mdi-pencil</v-icon>
@@ -38,9 +39,9 @@
             </v-card>
         </v-col>
 
-        <representanteCadastro v-if="exibCadastro" @alternarModoEdicao="alternarModoEdicao" :open="exibCadastro"
-            @close="exibCadastro = false" @cancelar="cancelar" @atualizarListagem="atualizarListagem" @exibSnack="exibSnack"
-            :isEdit="isEdit" :item="payload" />
+        <representanteCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
+            @atualizarListagem="atualizarListagem" @exibSnack="exibSnack" :isEdit="isEdit" :item="payload"
+            @alternarModoEdicao="alternarModoEdicao" />
 
 
         <DialogLoading v-if="isLoading" :is-loading="isLoading" :cor="'purple lighten-1'" :texto="'Atualizando dados...'" />
@@ -71,10 +72,13 @@ export default {
             return { listagem }
         }
     },
-    name: 'proprietarios',
+    name: 'representnates',
 
     data() {
         return {
+            listFooterOpcoes: {
+                itemsPerPageOptions: [25, 50, 100, -1],
+            },
             itemSelect: null,
             dlgConfirme: false,
             exibCadastro: false,
@@ -99,9 +103,7 @@ export default {
         }
     },
     filters: {
-        alternarModoEdicao(habilitar) {
-            this.isEdit = habilitar ? true : false
-        },
+
         zeroLeft(num) {
             return (num).toLocaleString('en-US', {
                 minimumIntegerDigits: 6,
@@ -110,6 +112,9 @@ export default {
         }
     },
     methods: {
+        alternarModoEdicao(habilitar) {
+            this.isEdit = habilitar ? true : false
+        },
         corStatus(id) {
             if (id == 1) return 'green--text'
             if (id == 2) return 'red--text'

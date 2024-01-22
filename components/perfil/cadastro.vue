@@ -44,7 +44,7 @@
                                 <v-text-field type="password" v-model="senhaCompare" label="Repetir Senha" outlined dense
                                     required :error-messages="formErros.senha"></v-text-field>
                             </v-col>
-                            <v-col cols="12" sm="6" md="3">
+                            <v-col cols="12" sm="6" md="3" v-if="false">
                                 <v-autocomplete label="Status" outlined auto-select-first dense :items="status"
                                     :item-text="item => item.descri" :item-value="item => item.id"
                                     v-model="item.ativo_status_id">

@@ -8,7 +8,8 @@
                     <v-text-field v-model="search" append-icon="mdi-magnify" label="Pesquisar" single-line hide-details>
                     </v-text-field>
                 </v-card-title>
-                <v-data-table :headers="headers" :items="listagem" :search="search" dense mobile-breakpoint="400">
+                <v-data-table :footer-props="listFooterOpcoes" :headers="headers" :items="listagem" :search="search" dense
+                    mobile-breakpoint="400">
                     <!-- eslint-disable-next-line -->
                     <template v-slot:item.actions="{ item }">
                         <v-icon @click.prevent="exibirItem(item)">mdi-pencil</v-icon>
@@ -72,6 +73,9 @@ export default {
     middleware: 'auth',
     data() {
         return {
+            listFooterOpcoes: {
+                itemsPerPageOptions: [25, 50, 100, -1],
+            },
             itemSelect: null,
             dlgConfirme: false,
             exibCadastro: false,
@@ -104,6 +108,7 @@ export default {
         }
     },
     methods: {
+
         corStatus(id) {
             if (id == 1) return 'green--text'
             if (id == 2) return 'red--text'

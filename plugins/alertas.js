@@ -29,15 +29,28 @@ export default (context, inject) => {
 
         })
     })
-    inject('confirmaExclusao', async (texto) => {
+    inject('confirmaExclusao', async (texto, titulo) => {
         const resp = await Swal.fire({
-            title: "Confirme a exclusão!",
-            text: texto ? texto : "Tem ceteza que deseja excluir este registro?",
+            title: titulo ? titulo : "Tem ceteza que deseja excluir este registro?",
+            text: texto ? texto : "",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
             confirmButtonText: "Sim, excluir!",
+            cancelButtonText: 'Cancelar',
+        })
+        return resp.isConfirmed;
+    })
+    inject('alertaConfirmacao', async (texto, titulo) => {
+        const resp = await Swal.fire({
+            title: titulo ? titulo : "Tem ceteza...?",
+            text: texto ? texto : "",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sim",
             cancelButtonText: 'Cancelar',
         })
         return resp.isConfirmed;

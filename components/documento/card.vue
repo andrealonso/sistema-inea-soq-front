@@ -13,28 +13,29 @@
             <v-btn class="" icon small @click.prevent.stop="download(item)">
                 <v-icon>mdi-download</v-icon>
             </v-btn>
-            <v-btn class="" icon small @click.prevent.stop="deleteConfirme = true">
+            <v-btn class="" icon small @click.prevent.stop="excluir()">
                 <v-icon>mdi-delete</v-icon>
             </v-btn>
         </v-sheet>
-        <dialogConfirme @sim="excluir(item)" @nao="deleteConfirme = false" :dlg-confirme="deleteConfirme"
-            texto="Tem certeza que deseja excluir este arquivo?" cor="error" titulo="Confirme exclusão!" />
+
     </div>
 </template>
 
 <script>
 export default {
     props: ['item'],
-    data() {
-        return {
-            deleteConfirme: false
-        }
-    },
     methods: {
         async excluir(file) {
-            const dados = await this.$axios.$delete(`/documento/${file.id}`)
-            this.$emit('atualizarListDocs')
-            this.deleteConfirme = false
+            if (await this.$confirmaExclusao()) {
+                try {
+                    const dados = await this.$axios.$delete(`/documento/${this.item.id}`)
+                    this.$emit('atualizarListDocs')
+                    this.$alertaSucesso('Documentos excluído com sucesso!')
+                } catch (error) {
+                    console.log(error);
+                    this$alertaErro('Não foi possível excluir o documento!')
+                }
+            }
         },
         async download(file) {
             await this.$downloadFile(file)

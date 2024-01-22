@@ -29,14 +29,30 @@
                                 </v-menu>
                             </v-col>
                             <v-col cols="12">
-                                <v-autocomplete label="Propriedades" outlined auto-select-first dense clearable
+                                <v-autocomplete label="Propriedade" outlined auto-select-first dense clearable
                                     :items="listaSelecao.propriedades" :item-text="item => item.nome"
                                     :item-value="item => item.id" v-model="filtro.propriedades_id">
                                 </v-autocomplete>
                             </v-col>
-
-
                             <v-col cols="12">
+                                <v-autocomplete label="Proprietário" outlined auto-select-first dense clearable
+                                    :items="listaSelecao.proprietarios" :item-text="item => item.nome"
+                                    :item-value="item => item.id" v-model="filtro.proprietario_id"
+                                    no-data-text="Sem informações." @focus="buscarListaProprietarios" :loading="isLoading2"
+                                    hide-no-data>
+                                </v-autocomplete>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-autocomplete label="Representante" outlined auto-select-first dense clearable
+                                    :items="listaSelecao.representantes" :item-text="item => item.nome"
+                                    :item-value="item => item.id" v-model="filtro.representante_id"
+                                    no-data-text="Sem informações." @focus="buscarListaRepresentantes" :loading="isLoading3"
+                                    hide-no-data>
+                                </v-autocomplete>
+                            </v-col>
+
+
+                            <v-col cols="12" v-if="false">
                                 <v-autocomplete label="Empresas" outlined auto-select-first dense clearable
                                     :items="listaSelecao.empresas" :item-text="item => item.nome"
                                     :item-value="item => item.id" v-model="filtro.empresas_id"
@@ -73,7 +89,9 @@ export default {
 
     data() {
         return {
-
+            isLoading1: false,
+            isLoading2: false,
+            isLoading3: false,
             parceiraInea: null,
             menu1: false,
             menu2: false,
@@ -89,7 +107,11 @@ export default {
                 { id: 2, descri: "INATIVO" }
             ],
 
-
+            listaCampos: {
+                propriedades: [],
+                proprietarios: [],
+                representantes: [],
+            }
         }
     },
     computed: {
@@ -108,12 +130,26 @@ export default {
             return this.filtro.data_fim ? moment.utc(this.filtro.data_fim).format('L') : ''
         }
     },
+    activated() {
+        console.log(this.$router.query);
+    },
+    mounted() {
+    },
     methods: {
+        limparParametrosNulos(filtro) {
+            Object.keys(filtro).forEach(item => {
+                if (!filtro[item])
+                    delete filtro[item]
+            })
+            return filtro
+        },
         aplicar() {
-            delete this.filtro.aplicado
             this.filtro.aplicado = Object.values(this.filtro).some(val => val)
-
-            this.$emit('atualizarListagem')
+            // console.log('filtro:', filtro);
+            delete this.filtro.aplicado
+            this.filtro = this.limparParametrosNulos(this.filtro)
+            this.$router.push({ path: '/agendamentos', query: this.filtro, })
+            this.$emit('atualizarListagem', this.filtro)
             this.$emit('close')
         },
         limparFiltro() {
@@ -122,6 +158,8 @@ export default {
             this.filtro.data_fim = null
             this.filtro.empresas_id = null
             this.filtro.propriedades_id = null
+            this.filtro.proprietario_id = null
+            this.filtro.representante_id = null
         },
         cancelar() {
             this.$emit('close')
@@ -136,15 +174,50 @@ export default {
             }
 
         },
+        async buscarListaPropriedades() {
+            if (this.listaCampos.propriedades.length)
+                return
+            try {
+                this.isLoading1 = true
+                this.listaCampos.propriedades = []
+                const { dados } = await this.$axios.$get('/propriedades')
+                this.listaCampos.propriedades = dados.registros
+                this.isLoading1 = false
+            } catch (error) {
+                this.isLoading1 = false
+                console.log(error);
+            }
+        },
+        async buscarListaProprietarios() {
+            if (this.listaCampos.proprietarios.length)
+                return
+            try {
+                this.isLoading2 = true
+                this.listaCampos.proprietarios = []
+                const { dados } = await this.$axios.$get('/proprietarios')
+                this.listaCampos.proprietarios = dados.registros
+                this.isLoading2 = false
+            } catch (error) {
+                this.isLoading2 = false
+                console.log(error);
+            }
+        },
+        async buscarListaRepresentantes() {
+            if (this.listaCampos.representantes.length)
+                return
+            try {
+                this.isLoading3 = true
+                this.listaCampos.representantes = []
+                const { dados } = await this.$axios.$get('/representantes')
+                this.listaCampos.representantes = dados.registros
+                this.isLoading3 = false
+            } catch (error) {
+                this.isLoading3 = false
+                console.log(error);
+            }
+        },
     }
 }
 </script>
 
-<style>
-.v-card--reveal {
-    bottom: 0;
-    opacity: 1 !important;
-    position: absolute;
-    width: 100%;
-}
-</style>
+<style></style>

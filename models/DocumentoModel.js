@@ -9,7 +9,8 @@ export function documentoModel(payload) {
             propriedades_id: payload.propriedades_id || null,
             representantes_id: payload.representantes_id || null,
             representantes_id: payload.representantes_id || null,
-            agenda_id: payload.agenda_id || null
+            agenda_id: payload.agenda_id || null,
+            denuncia_id: payload.agenda_id || null
         }
     } else {
         return {
@@ -19,7 +20,8 @@ export function documentoModel(payload) {
             propriedades_id: null,
             representantes_id: null,
             representantes_id: null,
-            agenda_id: null
+            agenda_id: null,
+            denuncia_id: null
         }
     }
 

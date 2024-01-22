@@ -3,6 +3,8 @@
         <v-card>
             <v-card-title class="green lighten-1 white--text">
                 {{ tituloPagina }}
+                <v-spacer></v-spacer>
+                <v-btn icon large @click.prevent.stop="cancelarRegistro" color="white">X</v-btn>
             </v-card-title>
             <v-card-text>
                 <v-form ref="form" v-model="valid" lazy-validation>
@@ -72,8 +74,6 @@
                             </v-col>
                             <!-- <pre>{{ item }}</pre> -->
                         </v-row>
-                        <dialogConfirme @sim="deleteItem(item)" @nao="deleteConfirme = false" :dlg-confirme="deleteConfirme"
-                            texto="Tem certeza que deseja excluir este registro?" cor="error" titulo="Confirme exclusão!" />
                     </v-container>
                 </v-form>
             </v-card-text>
@@ -83,7 +83,7 @@
                 </v-btn>
                 <v-btn color="secondary" elevation="2" outlined dense @click.prevent.stop="cancelarRegistro">
                     Cancelar</v-btn>
-                <v-btn color="error" elevation="2" outlined dense @click.prevent.stop="deleteConfirme = true"
+                <v-btn color="error" elevation="2" outlined dense @click.prevent.stop="deleteItem"
                     :disabled="!isEdit">Excluir
                 </v-btn>
                 <v-spacer></v-spacer>
@@ -102,7 +102,6 @@ export default {
         return {
             valid: true,
             tituloPagina: 'Cadastro de Empresas',
-            deleteConfirme: false,
             itemOld: { ...this.item },
             status: [
                 { id: 1, descri: "ATIVO" },
@@ -192,15 +191,17 @@ export default {
         cancelarRegistro() {
             this.$emit('close')
         },
-        async deleteItem(item) {
-            try {
-                await this.$axios.$delete(`/empresa/${item.id}`)
-                this.$emit('atualizarListagem')
-                this.$emit('close')
-                this.exibSnack('Registro exluído com sucesso!', 'success')
-            } catch (error) {
-                this.exibSnack('Não foi possível excluir o registro!', 'error')
-                console.log(error);
+        async deleteItem() {
+            if (await this.$confirmaExclusao()) {
+                try {
+                    await this.$axios.$delete(`/empresa/${this.item.id}`)
+                    this.$emit('atualizarListagem')
+                    this.$emit('close')
+                    this.$alertaSucesso('Registro excluído com sucesso!')
+                } catch (error) {
+                    this.exibSnack('Não foi possível excluir o registro!', 'error')
+                    console.log(error);
+                }
             }
         },
 

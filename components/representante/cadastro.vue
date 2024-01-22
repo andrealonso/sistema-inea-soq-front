@@ -3,6 +3,8 @@
         <v-card>
             <v-card-title class="green lighten-1 white--text">
                 {{ tituloPagina }}
+                <v-spacer></v-spacer>
+                <v-btn icon large @click.prevent.stop="cancelarRegistro" color="white">X</v-btn>
             </v-card-title>
             <v-card-text>
                 <v-form ref="form" v-model="valid" lazy-validation>
@@ -112,7 +114,6 @@ export default {
     },
     methods: {
         testeCpfCnpj(num) {
-            console.log(num.length);
             if (num.length > 14) {
                 return this.$cnpjValido(num)
             } else {
@@ -174,7 +175,7 @@ export default {
         async createItem(item) {
             try {
                 delete item.id
-                await this.$axios.$post(`/representante`, item,)
+                const { dados } = await this.$axios.$post(`/representante`, item,)
                 this.$emit('alternarModoEdicao', 1)
                 this.item.id = dados.id
                 this.$alertaSucesso()
@@ -185,7 +186,7 @@ export default {
         },
         async updateItem(item) {
             try {
-                await this.$axios.$put(`/representante/${item.id}`, item)
+                const { dados } = await this.$axios.$put(`/representante/${item.id}`, item)
                 this.$emit('atualizarListagem')
                 this.$emit('alternarModoEdicao', 1)
                 this.item.id = dados.id
@@ -204,7 +205,7 @@ export default {
                     await this.$axios.$delete(`/representante/${item.id}`)
                     this.$emit('atualizarListagem')
                     this.$emit('close')
-                    this.$alertaSucesso()
+                    this.$alertaSucesso('Registro excuído com sucesso!')
                 } catch (error) {
                     this.$alertaErro('Não foi possível excluir o registro!')
                     console.log(error);
@@ -216,11 +217,4 @@ export default {
 }
 </script>
 
-<style>
-.v-card--reveal {
-    bottom: 0;
-    opacity: 1 !important;
-    position: absolute;
-    width: 100%;
-}
-</style>
+<style></style>

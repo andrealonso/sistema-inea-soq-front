@@ -1,12 +1,14 @@
 <template>
     <v-dialog v-model="open" persistent>
-        <v-card>
+        <v-card id="print">
             <v-card-title class="green lighten-1 white--text">
                 {{ tituloPagina }}
+                <v-spacer></v-spacer>
+                <v-btn icon large @click.prevent.stop="cancelarRegistro" color="white">X</v-btn>
             </v-card-title>
             <v-card-text>
                 <v-form ref="form" v-model="valid" lazy-validation>
-                    <v-container>
+                    <v-container class="print">
                         <v-row dense>
                             <v-col cols="12" sm="6" md="6">
                                 <v-text-field :rules="[rules.required, rules.counter]" v-model="item.nome" label="Nome"
@@ -24,7 +26,7 @@
                             <v-col cols="12" sm="6" md="6">
                                 <v-autocomplete label="Representante" outlined auto-select-first dense
                                     :items="listaSelecao.representantes" :item-text="item => item.nome"
-                                    :item-value="item => item.id" v-model="item.representante_id" :rules="[rules.required]">
+                                    :item-value="item => item.id" v-model="item.representante_id">
                                 </v-autocomplete>
                             </v-col>
 
@@ -103,8 +105,11 @@
 </template>
 
 <script>
+import Impressao from '~/layouts/print.vue'
+
 
 export default {
+
     props: ['item', 'isEdit', 'open', 'listaSelecao'],
     data() {
         return {
@@ -228,7 +233,7 @@ export default {
                     await this.$axios.$delete(`/propriedade/${item.id}`)
                     this.$emit('atualizarListagem')
                     this.$emit('close')
-                    this.$alertaSucesso()
+                    this.$alertaSucesso('Registro excuído com sucesso!')
                 } catch (error) {
                     this.$alertaErro('Não foi possível excluir o registro!')
                     console.log(error);
@@ -241,10 +246,16 @@ export default {
 </script>
 
 <style>
-.v-card--reveal {
+@media print {
+    #print {
+        display: block;
+    }
+}
+
+/* .v-card--reveal {
     bottom: 0;
     opacity: 1 !important;
     position: absolute;
     width: 100%;
-}
+} */
 </style>

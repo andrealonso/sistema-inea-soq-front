@@ -1,6 +1,7 @@
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawer" :mini-variant="miniVariant" :clipped="clipped" fixed app>
+    <v-navigation-drawer expand-on-hover class="d-print-none" v-model="drawer" :mini-variant="true" :clipped="clipped"
+      app>
       <v-list>
         <v-list-item v-for="(item, i) in items" :key="i" :to="item.to" router exact color="success">
           <v-list-item-action>
@@ -12,7 +13,7 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar :clipped-left="clipped" fixed app elevation="1" color="success">
+    <v-app-bar :clipped-left="clipped" fixed app elevation="1" color="success" class="d-print-none">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title>
 
@@ -24,7 +25,7 @@
           <v-btn icon v-bind="attrs" v-on="on">
             <v-icon> mdi-account-circle</v-icon>
           </v-btn>
-          <div>{{ nomeUser }}</div>
+          <div>{{ nomeUser + ' - ' + nivelUser }}</div>
         </template>
         <v-card min-width="150">
           <v-card-text class="text-center">
@@ -32,11 +33,10 @@
             <v-btn text small @click="logout"> Sair</v-btn>
           </v-card-text>
         </v-card>
-
       </v-menu>
     </v-app-bar>
     <v-main>
-      <v-container fluid>
+      <v-container fluid class="d-print-none">
         <Nuxt />
         <!-- <pre>{{ $store.state.user }}</pre> -->
         <perfilCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
@@ -58,6 +58,7 @@ const eventBus = new Vue()
 // });
 export default {
   name: 'DefaultLayout',
+
   data() {
     return {
       payload: null,
@@ -89,6 +90,11 @@ export default {
     nomeUser() {
       let nome = this.$store.state.user.nome
       return nome ? nome.split(' ').slice(0, 2).join(' ') : ''
+    },
+    nivelUser() {
+      const user_tipo = ["ADM ROOT", "ADM INEA", "ADM EMPRESA", "FISCAL INEA", "FUNCIONÁRIO"]
+      let tipo_id = this.$store.state.user.user_tipo_id
+      return user_tipo[tipo_id - 1]
     }
   },
   methods: {

@@ -1,78 +1,112 @@
 <template>
-    <v-dialog v-model="open" persistent>
-        <v-card>
-            <v-card-title class="green lighten-1 white--text">
-                {{ tituloPagina }}
-            </v-card-title>
-            <v-card-text>
-                <v-form ref="form" v-model="valid" lazy-validation>
-                    <v-container>
-                        <v-row>
-                            <v-col cols="12" sm="6" md="8">
-                                <v-autocomplete :rules="[rules.required]" label="Propriedades" outlined auto-select-first
-                                    dense :items="listaSelecao.propriedades" :item-text="propriedade => propriedade.nome"
-                                    :item-value="propriedade => propriedade.id" v-model="item.propriedades_id"
-                                    @change="calcAreaCanaTotal">
-                                </v-autocomplete>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="2">
-                                <v-menu v-model="menu1" :close-on-content-click="false" max-width="290">
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-text-field :value="computedDataInicio" :error-messages="msgErroDatas"
-                                            label="Data do início" readonly v-bind="attrs" v-on="on" outlined
-                                            dense></v-text-field>
-                                    </template>
-                                    <v-date-picker v-model="item.data_inicio" @input="menu1 = false"></v-date-picker>
-                                </v-menu>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="2">
-                                <v-menu v-model="menu2" :close-on-content-click="false" max-width="290">
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-text-field :value="computedDataFim" :error-messages="msgErroDatas"
-                                            label="Data do fim" readonly v-bind="attrs" v-on="on"
-                                            @click:clear="item.data_fim = null" outlined dense></v-text-field>
-                                    </template>
-                                    <v-date-picker v-model="item.data_fim" @change="menu2 = false"></v-date-picker>
-                                </v-menu>
-                            </v-col>
+    <div>
+        <v-dialog v-model="open" persistent id="card">
+            <v-card class="d-print-none">
+                <v-card-title class="green lighten-1 white--text">
+                    Cadastro de ordem de queima
+                    <v-spacer></v-spacer>
+                    <v-btn icon large @click.prevent.stop="cancelarRegistro" color="white">X</v-btn>
+                </v-card-title>
+                <v-card-text>
+                    <v-tabs v-model="tabs" slider-color="green" fixed-tabs>
+                        <v-tabs-slider></v-tabs-slider>
+                        <v-tab href="#agenda">
+                            Agenda
+                        </v-tab>
+                        <v-tab href="#denuncia" :disabled="!isEdit">
+                            Denuncias
+                        </v-tab>
+                    </v-tabs>
+                    <v-tabs-items v-model="tabs">
+                        <v-tab-item value="agenda">
+                            <v-card>
+                                <v-form ref="form" v-model="valid" lazy-validation>
+                                    <v-container>
+                                        <v-row>
+                                            <v-col cols="12" sm="6" md="8">
+                                                <v-autocomplete :rules="[rules.required]" label="Propriedades" outlined
+                                                    auto-select-first dense :items="listaSelecao.propriedades"
+                                                    :item-text="propriedade => propriedade.nome"
+                                                    :item-value="propriedade => propriedade.id"
+                                                    v-model="item.propriedades_id" @change="calcAreaCanaTotal">
+                                                </v-autocomplete>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="2">
+                                                <v-menu v-model="menu1" :close-on-content-click="false" max-width="290">
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-text-field :value="computedDataInicio"
+                                                            :error-messages="msgErroDatas" label="Data do início" readonly
+                                                            v-bind="attrs" v-on="on" outlined dense></v-text-field>
+                                                    </template>
+                                                    <v-date-picker v-if="!isEdit" v-model="item.data_inicio"
+                                                        @input="menu1 = false"></v-date-picker>
+                                                </v-menu>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="2">
+                                                <v-menu v-model="menu2" :close-on-content-click="false" max-width="290">
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-text-field :value="computedDataFim"
+                                                            :error-messages="msgErroDatas" label="Data do fim" readonly
+                                                            v-bind="attrs" v-on="on" @click:clear="item.data_fim = null"
+                                                            outlined dense></v-text-field>
+                                                    </template>
+                                                    <v-date-picker v-if="!isEdit" v-model="item.data_fim"
+                                                        @change="menu2 = false"></v-date-picker>
+                                                </v-menu>
+                                            </v-col>
 
-                            <v-col cols="12" sm="6" md="2">
-                                <v-text-field type="number" :rules="[rules.required]" v-model="item.area_queima"
-                                    label="Área queima" outlined dense hide-spin-buttons
-                                    @blur="calcAreaCanaTotal"></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="2">
-                                <v-text-field :rules="[rules.required]" v-model="item.talhao" label="Talhão" outlined
-                                    dense></v-text-field>
-                            </v-col>
-                            <v-col cols="12" sm="6" md="8">
-                                <v-autocomplete :rules="[rules.required]" label="Empresas" outlined auto-select-first dense
-                                    :items="listaSelecao.empresas" :item-text="item => item.nome"
-                                    :item-value="item => item.id" v-model="item.empresas_id"
-                                    :disabled="desativarCampoEmpresas">
-                                </v-autocomplete>
-                            </v-col>
+                                            <v-col cols="12" sm="6" md="2">
+                                                <v-text-field type="number" :rules="[rules.required]"
+                                                    v-model="item.area_queima" label="Área queima" outlined dense
+                                                    hide-spin-buttons @blur="calcAreaCanaTotal"></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="2">
+                                                <v-text-field :rules="[rules.required]" v-model="item.talhao" label="Talhão"
+                                                    outlined dense></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="8">
+                                                <v-autocomplete :rules="[rules.required]" label="Empresas" outlined
+                                                    auto-select-first dense :items="listaSelecao.empresas"
+                                                    :item-text="item => item.nome" :item-value="item => item.id"
+                                                    v-model="item.empresas_id" :disabled="desativarCampoEmpresas">
+                                                </v-autocomplete>
+                                            </v-col>
 
-                            <!-- <pre>{{ item }}</pre> -->
-                        </v-row>
-                    </v-container>
-                </v-form>
-            </v-card-text>
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="success" elevation="2" outlined dense @click.prevent.stop="salvarItem(item)">Salvar
-                </v-btn>
-                <v-btn color="secondary" elevation="2" outlined dense @click.prevent.stop="cancelarRegistro">
-                    Cancelar</v-btn>
-                <v-btn color="error" elevation="2" outlined dense @click.prevent.stop="deleteItem"
-                    :disabled="!isEdit">Excluir
-                </v-btn>
-                <v-spacer></v-spacer>
-            </v-card-actions>
+                                            <v-col cols="12">
+                                                <v-textarea outlined dense v-model="item.obs"
+                                                    label="Obsevações"></v-textarea>
+                                            </v-col>
+                                        </v-row>
+                                    </v-container>
+                                </v-form>
 
-        </v-card>
-
-    </v-dialog>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="success" elevation="2" outlined dense
+                                        @click.prevent.stop="salvarItem(item)">Salvar
+                                    </v-btn>
+                                    <v-btn color="secondary" elevation="2" outlined dense
+                                        @click.prevent.stop="cancelarRegistro">
+                                        Cancelar</v-btn>
+                                    <v-btn color="error" elevation="2" outlined dense @click.prevent.stop="deleteItem"
+                                        :disabled="!isEdit">Excluir
+                                    </v-btn>
+                                    <v-btn color="secondary" elevation="2" outlined dense
+                                        @click.prevent.stop="print(item.id)" :disabled="!isEdit">
+                                        Imprimir</v-btn>
+                                    <v-spacer></v-spacer>
+                                </v-card-actions>
+                            </v-card>
+                        </v-tab-item>
+                        <v-tab-item value="denuncia">
+                            <DenunciaLista :listagem="listaSelecao.denuncias" :agendaId="item.id" />
+                        </v-tab-item>
+                    </v-tabs-items>
+                </v-card-text>
+            </v-card>
+            <agendaPrint open="true" :agenda="item" />
+        </v-dialog>
+    </div>
 </template>
 
 <script>
@@ -85,6 +119,9 @@ export default {
     },
     data() {
         return {
+            tabs: null,
+            teste: 'teste',
+            exibListDocs: true,
             exibConfirme: false,
             areCanaTotal: null,
             parceiraInea: null,
@@ -128,8 +165,11 @@ export default {
         }
     },
     methods: {
-        teste() {
-            console.log('teste');
+        imprimir() {
+            this.$router.push({
+                path: '/print/agendamento'
+
+            })
         },
         calcAreaCanaTotal(id) {
             if (this.item.propriedades_id > 0 && this.item.area_queima > 0) {
@@ -188,6 +228,7 @@ export default {
         },
         async createItem(item) {
             try {
+                console.log(item);
                 delete item.id
                 await this.$axios.$post(`/agendamento`, item,)
                 this.$emit('atualizarListagem')
@@ -229,18 +270,16 @@ export default {
 
         exibSnack(texto, cor) {
             this.$emit('exibSnack', texto, cor)
-        }
-
+        },
+        print(agendaId) {
+            this.$router.push({
+                path: '/print/agendamento',
+                query: { id: agendaId.toString() }
+            })
+        },
 
     }
 }
 </script>
 
-<style>
-.v-card--reveal {
-    bottom: 0;
-    opacity: 1 !important;
-    position: absolute;
-    width: 100%;
-}
-</style>
+<style></style>

@@ -2,7 +2,7 @@
     <v-dialog v-model="open" persistent max-width="500">
         <v-card>
             <v-card-title class="green lighten-1 white--text">
-                Cadastro de documentos
+                Nova denúncia.
                 <v-spacer></v-spacer>
                 <v-btn icon large @click.prevent.stop="cancelar" color="white">X</v-btn>
             </v-card-title>
@@ -10,20 +10,31 @@
                 <v-form ref="form" v-model="valid" lazy-validation>
                     <v-container>
                         <v-row>
+                            <v-col cols="12" sm="6" md="6">
+                                <v-menu v-model="menu1" :close-on-content-click="false" max-width="290">
+                                    <template v-slot:activator="{ on, attrs }">
+                                        <v-text-field label="Data" :value="computedData" readonly v-bind="attrs" v-on="on"
+                                            outlined dense></v-text-field>
+                                    </template>
+                                    <v-date-picker v-model="item.data" @input="menu1 = false"></v-date-picker>
+                                </v-menu>
+                            </v-col>
                             <v-col cols="12">
                                 <v-text-field :rules="[rules.required]" v-model="item.descricao" label="Descrição" outlined
                                     dense hide-spin-buttons></v-text-field>
                             </v-col>
+                            <v-col cols="12">
+                                <v-text-field :rules="[rules.required]" v-model="item.num_bo" label="Número do B.O."
+                                    outlined dense hide-spin-buttons></v-text-field>
+                            </v-col>
 
                             <v-col cols="12">
                                 <v-file-input v-model="arquivoSelecionado" show-size outlined dense
-                                    :rules="[rules.required]" label="Selecionar o arquivo."></v-file-input>
+                                    prepend-inner-icon="mdi-paperclip" clearable label="Selecionar o arquivo."
+                                    prepend-icon="" :value="computedData"></v-file-input>
                                 <input type="file" name="file" id="file" hidden>
-                                <div class="font-weight-bold">Requisitos:</div>
-                                <div>- Os tipos de arquivos permitidos são: PDF, word, excel e imagens.</div>
-                                <div>- O tamanho máximo de ser de até 5MB.</div>
-                            </v-col>
 
+                            </v-col>
                         </v-row>
                     </v-container>
                 </v-form>
@@ -44,11 +55,14 @@
 </template>
 
 <script>
+import moment from 'moment'
 
 export default {
     props: ['item', 'open', 'destinatario', 'destId'],
     data() {
         return {
+            menu1: false,
+            data: null,
             valid: true,
             arquivoSelecionado: null,
             rules: {
@@ -62,7 +76,12 @@ export default {
 
         }
     },
-
+    computed: {
+        computedData() {
+            moment.locale('pt-br')
+            return this.item.data ? moment(this.item.data).format('L') : ''
+        },
+    },
     methods: {
         exibSnack(texto, cor) {
             this.snack.color = cor || ''
@@ -77,12 +96,31 @@ export default {
         async salvarItem() {
             if (!this.$refs.form.validate())
                 return
-            const resp = await this.$uploadFile(this.item.descricao, this.destinatario, this.destId, this.arquivoSelecionado)
+            delete this.item.id
+            const { dados } = await this.$axios.$post(`/denuncia`, this.item,)
+            this.$alertaSucesso()
+
+            if (!dados) {
+                this.$alertaErro('Não foi possível salvar o registro.')
+            } else {
+                if (this.arquivoSelecionado) {
+                    this.salvarDocumento(dados)
+                } else {
+                    this.$emit('atualizarLista')
+                    this.$emit('close')
+                }
+            }
+        },
+        async salvarDocumento(denuncia) {
+            if (!this.$refs.form.validate())
+                return
+            console.log(denuncia);
+            const resp = await this.$uploadFile(`ordem-${denuncia.agenda_id}-${denuncia.descricao}`, 'denuncia_id', denuncia.id, this.arquivoSelecionado)
             if (!resp) {
                 this.exibAlert('Não foi possível salvar o arquivo. Verifique o tamanho e o tipo de arquivo.')
             } else {
                 this.arquivoSelecionado = null
-                this.$emit('atualizarListDocs')
+                this.$emit('atualizarLista')
                 this.$emit('close')
             }
         },

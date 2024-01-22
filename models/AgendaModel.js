@@ -12,6 +12,7 @@ export function agendaModel(payload) {
             obs: payload.obs || null,
             propriedades_id: payload.propriedades_id || null,
             empresas_id: payload.empresas_id || false,
+            agenda_Status_id: payload.agenda_Status_id || null,
             user_id: payload.user_id || null,
         }
     } else {
@@ -25,6 +26,7 @@ export function agendaModel(payload) {
             obs: null,
             propriedades_id: null,
             empresas_id: false,
+            agenda_Status_id: 1,
             user_id: null,
         }
     }

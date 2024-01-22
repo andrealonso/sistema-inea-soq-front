@@ -20,32 +20,42 @@
                                     outlined dense required></v-text-field>
                             </v-col>
                         </v-form>
-                        <snack-login v-if="snack.active" :snack="snack" @close="snack.active = false" />
+                        <v-alert type="error" transition="scale-transition" dense outlined color="red lighten-2" dark
+                            v-if="falhaLogin">
+                            {{ msgAlert }}
+                        </v-alert>
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn @click="efetuarLogin">Login</v-btn>
+                        <v-btn @click="efetuarLogin" :disabled="isLoading">Efetuar Login
+                            <v-btn icon absolute>
+                                <v-progress-circular indeterminate color="green" v-show="isLoading"></v-progress-circular>
+                            </v-btn>
+                        </v-btn>
                         <v-spacer></v-spacer>
                     </v-card-actions>
-
+                    <snack-login v-if="snack.active" :snack="snack" @close="snack.active = false" />
                 </v-card>
                 <v-card v-if="logado">
                     <v-card-text class="p-4 text-center">
 
                     </v-card-text>
                 </v-card>
-                <pre>{{ }}</pre>
+
             </v-col>
         </v-row>
     </v-container>
 </template>
 
 <script>
-
+import moment from 'moment'
 export default {
     layout: 'login',
     data() {
         return {
+            falhaLogin: false,
+            isLoading: false,
+            msgAlert: '',
             valid: true,
             logado: false,
             userData: {
@@ -55,7 +65,7 @@ export default {
             snack: {
                 active: false,
                 text: "teste",
-                timeout: 3000,
+                timeout: 2500,
                 color: "primary"
             },
             rules: {
@@ -68,13 +78,17 @@ export default {
         }
     },
     async beforeMount() {
+        const filtro = {
+            data_inicio: moment.utc().startOf('month').format('YYYY-MM-DD'),
+            data_fim: moment.utc().endOf('month').format('YYYY-MM-DD')
+        }
         try {
             const sessionUser = JSON.parse(sessionStorage.getItem('user'))
             if (sessionUser && !this.$store.state.user.user_tipo_id) {
                 const responseUser = await this.getUser(sessionUser.token)
                 if (responseUser) {
                     this.$store.commit('user/STORE_USER', responseUser)
-                    this.$router.push({ path: '/agendamentos' })
+                    this.$router.push({ path: '/agendamentos', query: filtro })
                 } else { this.$router.push({ path: '/login' }) }
             } else { this.$router.push({ path: '/login' }) }
 
@@ -99,22 +113,34 @@ export default {
             this.snack.active = true
         },
         async efetuarLogin(context) {
+            const filtro = {
+                data_inicio: moment.utc().startOf('month').format('YYYY-MM-DD'),
+                data_fim: moment.utc().endOf('month').format('YYYY-MM-DD')
+            }
+            this.isLoading = true
             try {
                 if (!this.$refs.form.validate()) {
                     return
                 }
                 const dados = await this.$axios.$post(`/login`, this.userData)
                 if (!dados.erro) {
+                    this.falhaLogin = false
                     const { usuario } = dados
                     sessionStorage.setItem('user', JSON.stringify(usuario))
                     this.$store.commit('user/STORE_USER', usuario)
-                    this.$router.push({ path: '/agendamentos' })
+                    this.$router.push({ path: '/agendamentos', query: filtro })
+                } else {
+                    this.falhaLogin = true
+                    this.msgAlert = dados?.msg || 'Falho no login!'
+
                 }
             } catch (error) {
-                this.exibSnack('Login ou senha inválida!', 'error')
+                this.falhaLogin = true
+                this.msgAlert = 'Erro interno no servidor! Contate o adiministrador.'
                 sessionStorage.removeItem('userToken')
-                console.log(error);
+                console.log(error + 'teste');
             }
+            this.isLoading = false
         }
     }
 

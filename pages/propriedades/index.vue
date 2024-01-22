@@ -9,7 +9,8 @@
                         hide-details>
                     </v-text-field>
                 </v-card-title>
-                <v-data-table :headers="headers" :items="listagem" :search="search" dense mobile-breakpoint="400">
+                <v-data-table :footer-props="listFooterOpcoes" :headers="headers" :items="listagem" :search="search" dense
+                    mobile-breakpoint="400">
                     <!-- eslint-disable-next-line -->
                     <template v-slot:item.actions="{ item }">
                         <v-icon @click.prevent="exibirItem(item)">mdi-pencil</v-icon>
@@ -69,6 +70,9 @@ export default {
     name: 'propriedades',
     data() {
         return {
+            listFooterOpcoes: {
+                itemsPerPageOptions: [25, 50, 100, -1],
+            },
             itemSelect: null,
             dlgConfirme: false,
             exibCadastro: false,
