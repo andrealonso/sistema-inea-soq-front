@@ -133,7 +133,7 @@ export default {
                 this.item.uf = result?.uf || null
                 this.$refs.inputNum.focus()
             } else {
-                this.exibSnack('CEP inválido ou não encontrado!', 'error')
+                this.$alertaErro('CEP inválido ou não encontrado!', 'error')
                 this.limparEndereco()
             }
 
@@ -156,7 +156,7 @@ export default {
                 }
             } else {
                 this.$emit('close')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
+                this.$alertaSucesso()
             }
 
         },
@@ -171,9 +171,9 @@ export default {
                 await this.$axios.$post(`/empresa`, item,)
                 this.$emit('atualizarListagem')
                 this.$emit('close')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
+                this.$alertaSucesso()
             } catch (error) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
+                this.$alertaErro()
                 console.log(error);
             }
         },
@@ -182,9 +182,9 @@ export default {
                 await this.$axios.$put(`/empresa/${item.id}`, item)
                 this.$emit('atualizarListagem')
                 this.$emit('close')
-                this.exibSnack('Registro salvo com sucesso!', 'success')
+                this.$alertaSucesso()
             } catch (error) {
-                this.exibSnack('Não foi possível salvar o registro! Verifique os dados e tente novamente', 'error')
+                this.$alertaErro()
                 console.log(error);
             }
         },
@@ -199,26 +199,14 @@ export default {
                     this.$emit('close')
                     this.$alertaSucesso('Registro excluído com sucesso!')
                 } catch (error) {
-                    this.exibSnack('Não foi possível excluir o registro!', 'error')
+                    this.$alertaErro()
                     console.log(error);
                 }
             }
         },
-
-        exibSnack(texto, cor) {
-            this.$emit('exibSnack', texto, cor)
-        }
 
 
     }
 }
 </script>
 
-<style>
-.v-card--reveal {
-    bottom: 0;
-    opacity: 1 !important;
-    position: absolute;
-    width: 100%;
-}
-</style>

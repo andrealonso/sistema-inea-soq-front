@@ -25,7 +25,6 @@
                 </v-data-table>
             </v-card>
         </v-col>
-
         <v-col cols="12">
             <v-card class="panel-bottom">
                 <v-container>
@@ -33,17 +32,9 @@
                 </v-container>
             </v-card>
         </v-col>
-
         <empresaCadastro v-if="exibCadastro" :open="exibCadastro" @close="exibCadastro = false" @cancelar="cancelar"
-            @atualizarListagem="atualizarListagem" @exibSnack="exibSnack" :isEdit="isEdit" :item="payload" />
-
-
+            @atualizarListagem="atualizarListagem" :isEdit="isEdit" :item="payload" />
         <DialogLoading v-if="isLoading" :is-loading="isLoading" :cor="'purple lighten-1'" :texto="'Atualizando dados...'" />
-        <DialogConfirmacao v-if="dlgConfirme" :dlg-confirme="dlgConfirme" @nao="dlgConfirme = false" @sim="excluirItem"
-            :cor="'red--text lighten-2'" titulo="Exclusão de registro."
-            :texto="'Tem certeza que deseja excluir este registro?'" />
-
-        <snackbar v-if="snack.active" :snack="snack" @close="snack.active = false" />
 
     </v-row>
 </template>
@@ -89,12 +80,7 @@ export default {
             ],
             exibLista: false,
             payload: empresaModel(),
-            snack: {
-                active: false,
-                text: "teste",
-                timeout: 2000,
-                color: "primary"
-            }
+
         }
     },
     filters: {
@@ -115,18 +101,11 @@ export default {
             this.isEdit = false
             this.exibCadastro = true
         },
-        exibSnack(texto, cor) {
-            this.snack.color = cor || ''
-            this.snack.text = texto || ''
-            this.snack.active = true
-        },
-        confirmeExclusao(item) {
-            this.itemSelect = item
-            this.dlgConfirme = true
-        },
+
         async atualizarListagem() {
             try {
                 const resposta = await this.$axios.$get('/empresas/')
+                console.log('atualizar', resposta);
                 if (!resposta?.erro) {
                     this.listagem = resposta.dados.registros
                 } else {

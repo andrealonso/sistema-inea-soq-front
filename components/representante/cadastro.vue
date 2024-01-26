@@ -157,9 +157,9 @@ export default {
             }
             if (this.foiAlterado()) {
                 if (!this.isEdit) {
-                    this.createItem(this.item)
+                    await this.createItem(this.item)
                 } else {
-                    this.updateItem(this.item)
+                    await this.updateItem(this.item)
                 }
             } else {
                 this.$alertaSucesso()

@@ -200,6 +200,15 @@ export default {
           }
         )
       }
+      if ([1].some(item => item === user_tipo_id)) {
+        lista.push(
+          {
+            icon: 'mdi-database-clock',
+            title: 'Logs',
+            to: '/logs'
+          }
+        )
+      }
       return lista
     },
     async logout() {
