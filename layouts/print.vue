@@ -1,9 +1,12 @@
 <template>
     <v-app>
-        <v-app-bar class="green d-print-none" height="50">
+        <v-toolbar class="green d-print-none" height="50">
+            <v-toolbar-title>
+                <span> INEA - Sistema de Ordem de queima</span>
+            </v-toolbar-title>
             <v-spacer></v-spacer>
             <v-btn @click="imprimir">Imprimir</v-btn>
-        </v-app-bar>
+        </v-toolbar>
         <v-main class="pagina">
             <v-container class="white mt-1">
                 <v-row>

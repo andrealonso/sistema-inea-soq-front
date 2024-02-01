@@ -38,16 +38,14 @@
                                 <v-autocomplete label="Proprietário" outlined auto-select-first dense clearable
                                     :items="listaSelecao.proprietarios" :item-text="item => item.nome"
                                     :item-value="item => item.id" v-model="filtro.proprietario_id"
-                                    no-data-text="Sem informações." @focus="buscarListaProprietarios" :loading="isLoading2"
-                                    hide-no-data>
+                                    no-data-text="Sem informações." hide-no-data>
                                 </v-autocomplete>
                             </v-col>
                             <v-col cols="12">
                                 <v-autocomplete label="Representante" outlined auto-select-first dense clearable
                                     :items="listaSelecao.representantes" :item-text="item => item.nome"
                                     :item-value="item => item.id" v-model="filtro.representante_id"
-                                    no-data-text="Sem informações." @focus="buscarListaRepresentantes" :loading="isLoading3"
-                                    hide-no-data>
+                                    no-data-text="Sem informações." hide-no-data>
                                 </v-autocomplete>
                             </v-col>
 
@@ -85,13 +83,10 @@
 import moment from 'moment'
 moment.locale('pt-br')
 export default {
-    props: ['filtro', 'open', 'listaSelecao'],
+    props: ['filtroCad', 'open', 'listaSelecao'],
 
     data() {
         return {
-            isLoading1: false,
-            isLoading2: false,
-            isLoading3: false,
             parceiraInea: null,
             menu1: false,
             menu2: false,
@@ -99,26 +94,13 @@ export default {
             dataFim: null,
             valid: true,
             msgErroDatas: '',
-            tituloPagina: 'Cadastro de Agendamento',
-            deleteConfirme: false,
-            itemOld: { ...this.item },
-            status: [
-                { id: 1, descri: "ATIVO" },
-                { id: 2, descri: "INATIVO" }
-            ],
-
-            listaCampos: {
-                propriedades: [],
-                proprietarios: [],
-                representantes: [],
-            }
+            filtro: { ...this.filtroCad }
         }
     },
     computed: {
         desativarCampoEmpresas() {
             if (this.$store.state.user.user_tipo_id === 1 || this.$store.state.user.parceira_inea)
                 return false
-
             return true
         },
         computedDataInicio() {
@@ -136,30 +118,26 @@ export default {
     mounted() {
     },
     methods: {
-        limparParametrosNulos(filtro) {
-            Object.keys(filtro).forEach(item => {
-                if (!filtro[item])
-                    delete filtro[item]
+        limparParametrosNulos() {
+            Object.keys(this.filtro).forEach(key => {
+                if (!this.filtro[key])
+                    delete this.filtro[key]
             })
-            return filtro
+
         },
         aplicar() {
-            this.filtro.aplicado = Object.values(this.filtro).some(val => val)
-            // console.log('filtro:', filtro);
-            delete this.filtro.aplicado
-            this.filtro = this.limparParametrosNulos(this.filtro)
+            this.limparParametrosNulos()
             this.$router.push({ path: '/agendamentos', query: this.filtro, })
             this.$emit('atualizarListagem', this.filtro)
             this.$emit('close')
         },
         limparFiltro() {
-            this.filtro.aplicado = false
-            this.filtro.data_inicio = null
-            this.filtro.data_fim = null
-            this.filtro.empresas_id = null
-            this.filtro.propriedades_id = null
-            this.filtro.proprietario_id = null
-            this.filtro.representante_id = null
+            Object.keys(this.filtro).forEach(item => {
+                if (this.filtro[item])
+                    this.filtro[item] = null
+            })
+            this.filtro.data_inicio = moment().startOf('month').format('YYYY-MM-DD')
+            this.filtro.data_fim = moment().endOf('month').format('YYYY-MM-DD')
         },
         cancelar() {
             this.$emit('close')

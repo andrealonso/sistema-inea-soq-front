@@ -1,56 +1,23 @@
 <template>
     <v-row class="mb-4 d-print-block">
-        <v-col cols="12" v-if="exibLista">
+        <v-col cols="12">
             <!-- Listagem -->
             <v-card class="p-3">
-                <v-card-title class=" d-flex justify-center align-start">
-                    <h4>Lista de Agendamentos</h4>
+                <v-card-title>
+                    <div>
+                        <h4>Lista de Agendamentos</h4>
+                        <p class="text-body-2">Preíodo: {{ filtro.data_inicio | formatData }} á {{ filtro.data_fim |
+                            formatData }}</p>
+                    </div>
                     <v-spacer></v-spacer>
-                    <v-tooltip open-delay="500" bottom>
+                    <v-tooltip open-delay="500" bottom v-if="exibLista">
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn v-bind="attrs" v-on="on" icon class="black--text"
                                 @click="exibLista = false"><v-icon>mdi-table</v-icon></v-btn>
                         </template>
                         <span>Exibir Cartões</span>
                     </v-tooltip>
-
-                    <v-tooltip open-delay="500" bottom>
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs" v-on="on" icon class="black--text"
-                                @click="cadFiltro"><v-icon>mdi-filter-variant</v-icon></v-btn>
-                        </template>
-                        <span>Filtros</span>
-                    </v-tooltip>
-                </v-card-title>
-                <v-data-table :footer-props="listFooterOpcoes" :headers="headers" :items="listagem" :search="search" dense
-                    mobile-breakpoint="400">
-                    <!-- eslint-disable-next-line -->
-                    <template v-slot:item.actions="{ item }">
-                        <v-icon @click.prevent="print(item.id)">mdi-eye</v-icon>
-                        <v-icon :disabled="bloquearUsers(fiscais)" @click.prevent="exibirItem(item)">mdi-pencil</v-icon>
-                    </template>
-                    <!-- eslint-disable-next-line -->
-                    <template v-slot:item.id="{ item }">
-                        {{ item.id | zeroLeft }}
-                    </template>
-                    <!-- eslint-disable-next-line -->
-                    <template v-slot:item.data_inicio="{ item }">
-                        {{ item.data_inicio | formatData }}
-                    </template>
-                    <!-- eslint-disable-next-line -->
-                    <template v-slot:item.data_fim="{ item }">
-                        {{ item.data_fim | formatData }}
-                    </template>
-                </v-data-table>
-            </v-card>
-        </v-col>
-
-        <v-col cols="12" v-if="!exibLista">
-            <v-card class="">
-                <v-card-title>
-                    <h4>Lista de Agendamentos</h4>
-                    <v-spacer></v-spacer>
-                    <v-tooltip open-delay="500" bottom>
+                    <v-tooltip open-delay="500" bottom v-if="!exibLista">
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn v-bind="attrs" v-on="on" icon class="black--text"
                                 @click="exibLista = true"><v-icon>mdi-playlist-minus</v-icon></v-btn>
@@ -64,94 +31,121 @@
                         </template>
                         <span>Filtros</span>
                     </v-tooltip>
-
                 </v-card-title>
-                <v-card-text>
-                    <v-row>
-                        <v-col cols="12" md="4" v-for="itemCard in listagem" :key="itemCard.id">
-                            <v-card rounded="xl" height="300" min class="d-flex flex-column ">
-                                <v-card-title class="d-flex justify-space-between py-1">
-                                    <h5>{{ itemCard.data_inicio | formatData }} - {{ itemCard.data_fim | formatData }}</h5>
-                                    <v-menu bottom origin="center center" transition="scale-transition">
-                                        <template v-slot:activator="{ on, attrs }">
-                                            <v-btn color="success" dark v-bind="attrs" v-on="on" icon>
-                                                <v-icon
-                                                    :color="listaStatus[itemCard.agenda_Status_id - 1]?.color || 'secondary'">{{
-                                                        listaStatus[itemCard.agenda_Status_id - 1]?.icon || 'mdi-calendar-clock'
-                                                    }}</v-icon>
-                                            </v-btn>
-                                        </template>
-                                        <v-list v-if="!bloquearUsers(fiscais)">
-                                            <v-list-item v-for="(item, i) in listaStatus" :key="i" link>
-                                                <v-list-item-title @click="alterarStatus(item, itemCard)">
-                                                    <v-icon :color="item.color || 'secondary'">{{ item?.icon }} </v-icon> {{
-                                                        item.descri
-                                                    }}
-                                                </v-list-item-title>
-                                            </v-list-item>
-                                        </v-list>
-                                    </v-menu>
-                                </v-card-title>
-                                <v-divider></v-divider>
-                                <v-card-text>
+                <template v-if="exibLista">
+                    <v-data-table :footer-props="listFooterOpcoes" :headers="headers" :items="listagem" :search="search"
+                        dense mobile-breakpoint="400">
+                        <!-- eslint-disable-next-line -->
+                        <template v-slot:item.actions="{ item }">
+                            <v-icon @click.prevent="print(item.id)">mdi-eye</v-icon>
+                            <v-icon :disabled="bloquearUsers(fiscais)" @click.prevent="exibirItem(item)">mdi-pencil</v-icon>
+                        </template>
+                        <!-- eslint-disable-next-line -->
+                        <template v-slot:item.id="{ item }">
+                            {{ item.id | zeroLeft }}
+                        </template>
+                        <!-- eslint-disable-next-line -->
+                        <template v-slot:item.data_inicio="{ item }">
+                            {{ item.data_inicio | formatData }}
+                        </template>
+                        <!-- eslint-disable-next-line -->
+                        <template v-slot:item.data_fim="{ item }">
+                            {{ item.data_fim | formatData }}
+                        </template>
+                    </v-data-table>
+                </template>
+                <template v-else>
+                    <v-card-text>
+                        <v-row>
+                            <v-col cols="12" md="4" v-for="itemCard in listagem" :key="itemCard.id">
+                                <v-card rounded="xl" height="300" min class="d-flex flex-column ">
+                                    <v-card-title class="d-flex justify-space-between py-1">
+                                        <h5>{{ itemCard.data_inicio | formatData }} - {{ itemCard.data_fim | formatData }}
+                                        </h5>
+                                        <v-menu bottom origin="center center" transition="scale-transition">
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn color="success" dark v-bind="attrs" v-on="on" icon>
+                                                    <v-icon
+                                                        :color="listaStatus[itemCard.agenda_Status_id - 1]?.color || 'secondary'">{{
+                                                            listaStatus[itemCard.agenda_Status_id - 1]?.icon ||
+                                                            'mdi-calendar-clock'
+                                                        }}</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <v-list v-if="!bloquearUsers(fiscais)">
+                                                <v-list-item v-for="(item, i) in listaStatus" :key="i" link>
+                                                    <v-list-item-title @click="alterarStatus(item, itemCard)">
+                                                        <v-icon :color="item.color || 'secondary'">{{ item?.icon }}
+                                                        </v-icon> {{
+                                                            item.descri
+                                                        }}
+                                                    </v-list-item-title>
+                                                </v-list-item>
+                                            </v-list>
+                                        </v-menu>
+                                    </v-card-title>
+                                    <v-divider></v-divider>
+                                    <v-card-text>
 
-                                    <div class="text-body-2"><strong>Código:</strong> {{ itemCard.id | zeroLeft }}</div>
-                                    <div class="text-body-2"><strong>Propriedade:</strong> {{ itemCard.propriedades?.nome }}
-                                    </div>
-                                    <div class="text-body-2"><strong>Área da queima:</strong> {{ itemCard.area_queima
-                                    }}</div>
-                                    <div class="text-body-2"><strong>Talhão:</strong> {{ itemCard?.talhao }}</div>
+                                        <div class="text-body-2"><strong>Código:</strong> {{ itemCard.id | zeroLeft }}</div>
+                                        <div class="text-body-2"><strong>Propriedade:</strong> {{
+                                            itemCard.propriedades?.nome }}
+                                        </div>
+                                        <div class="text-body-2"><strong>Área da queima:</strong> {{ itemCard.area_queima
+                                        }}</div>
+                                        <div class="text-body-2"><strong>Talhão:</strong> {{ itemCard?.talhao }}</div>
 
-                                    <div class="text-body-2"><strong>Proprietario:</strong> {{
-                                        itemCard.propriedades?.proprietarios?.nome }}
-                                    </div>
-                                    <div class="text-body-2"><strong>Representante:</strong> {{
-                                        itemCard.propriedades?.representantes?.nome }}
-                                    </div>
-                                </v-card-text>
-                                <v-spacer></v-spacer>
-                                <v-card-actions class="d-flex justify-space-around">
-                                    <v-tooltip open-delay="500" bottom>
-                                        <template v-slot:activator="{ on, attrs }">
-                                            <v-btn :disabled="bloquearUsers(fiscais)" color="success" v-bind="attrs"
-                                                v-on="on" @click="novaDenuncia(itemCard)"><v-icon>mdi-alert-plus
-                                                </v-icon></v-btn>
-                                        </template>
-                                        <span>Adicionar denúncia</span>
-                                    </v-tooltip>
-                                    <v-tooltip open-delay="500" bottom>
-                                        <template v-slot:activator="{ on, attrs }">
-                                            <v-btn color="success" v-bind="attrs" v-on="on"
-                                                @click="print(itemCard.id)"><v-icon>mdi-eye
-                                                </v-icon></v-btn>
-                                        </template>
-                                        <span>Visualizar ordem</span>
-                                    </v-tooltip>
-                                    <v-tooltip open-delay="500" bottom>
-                                        <template v-slot:activator="{ on, attrs }">
-                                            <v-btn color="success" v-bind="attrs" v-on="on"
-                                                :disabled="!itemCard.propriedades.geolocal"
-                                                :href="itemCard.propriedades.geolocal"
-                                                target="_blank"><v-icon>mdi-map-marker-radius-outline
-                                                </v-icon></v-btn>
-                                        </template>
-                                        <span>Mostrar no mapa</span>
-                                    </v-tooltip>
-                                    <v-tooltip open-delay="500" bottom>
-                                        <template v-slot:activator="{ on, attrs }">
-                                            <v-btn :disabled="bloquearUsers(fiscais)" color="success" v-bind="attrs"
-                                                v-on="on"
-                                                @click.prevent="exibirItem(itemCard)"><v-icon>mdi-square-edit-outline
-                                                </v-icon></v-btn>
-                                        </template>
-                                        <span>Editar</span>
-                                    </v-tooltip>
-                                </v-card-actions>
-                            </v-card>
-                        </v-col>
-                    </v-row>
+                                        <div class="text-body-2"><strong>Proprietario:</strong> {{
+                                            itemCard.propriedades?.proprietarios?.nome }}
+                                        </div>
+                                        <div class="text-body-2"><strong>Representante:</strong> {{
+                                            itemCard.propriedades?.representantes?.nome }}
+                                        </div>
+                                    </v-card-text>
+                                    <v-spacer></v-spacer>
+                                    <v-card-actions class="d-flex justify-space-around">
+                                        <v-tooltip open-delay="500" bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn :disabled="bloquearUsers(fiscais)" color="success" v-bind="attrs"
+                                                    v-on="on" @click="novaDenuncia(itemCard)"><v-icon>mdi-alert-plus
+                                                    </v-icon></v-btn>
+                                            </template>
+                                            <span>Adicionar denúncia</span>
+                                        </v-tooltip>
+                                        <v-tooltip open-delay="500" bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn color="success" v-bind="attrs" v-on="on"
+                                                    @click="print(itemCard.id)"><v-icon>mdi-eye
+                                                    </v-icon></v-btn>
+                                            </template>
+                                            <span>Visualizar ordem</span>
+                                        </v-tooltip>
+                                        <v-tooltip open-delay="500" bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn color="success" v-bind="attrs" v-on="on"
+                                                    :disabled="!itemCard.propriedades.geolocal"
+                                                    :href="itemCard.propriedades.geolocal"
+                                                    target="_blank"><v-icon>mdi-map-marker-radius-outline
+                                                    </v-icon></v-btn>
+                                            </template>
+                                            <span>Mostrar no mapa</span>
+                                        </v-tooltip>
+                                        <v-tooltip open-delay="500" bottom>
+                                            <template v-slot:activator="{ on, attrs }">
+                                                <v-btn :disabled="bloquearUsers(fiscais)" color="success" v-bind="attrs"
+                                                    v-on="on"
+                                                    @click.prevent="exibirItem(itemCard)"><v-icon>mdi-square-edit-outline
+                                                    </v-icon></v-btn>
+                                            </template>
+                                            <span>Editar</span>
+                                        </v-tooltip>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-col>
+                        </v-row>
 
-                </v-card-text>
+                    </v-card-text>
+                </template>
             </v-card>
         </v-col>
 
@@ -160,6 +154,8 @@
                 <v-container>
                     <v-btn v-if="!bloquearUsers(fiscais)" color="primary" elevation="2" outlined
                         @click.prevent.stop="novoItem">Novo</v-btn>
+                    <v-btn v-if="!bloquearUsers(fiscais)" color="primary" elevation="2" outlined
+                        @click.prevent.stop="atualizarListagem">Atualizar</v-btn>
                 </v-container>
             </v-card>
         </v-col>
@@ -173,7 +169,7 @@
             @close="exibCadDenuncia = false" />
 
         <filtrosAgenda v-if="exibFiltro" :open="exibFiltro" @close="exibFiltro = false"
-            @atualizarListagem="atualizarListagem" :filtro="filtro" :lista-selecao="listaSelecao" />
+            @atualizarListagem="atualizarListagem" :filtroCad="filtro" :lista-selecao="listaSelecao" />
         <DialogLoading v-if="isLoading" :is-loading="isLoading" :cor="'purple lighten-1'" :texto="'Atualizando dados...'" />
 
     </v-row>
@@ -188,7 +184,6 @@ export default {
     async asyncData({ $axios, route }) {
         // console.log(route.query);
         let listagem = []
-
         try {
             let filtro
             const { query } = route
@@ -196,23 +191,17 @@ export default {
                 filtro = route.query
             } else {
                 filtro = {
-                    aplicado: false,
-                    propriedades_id: null,
-                    proprietario_id: null,
-                    representante_id: null,
-                    empresas_id: null,
                     data_inicio: moment.utc().startOf('month').format('YYYY-MM-DD'),
                     data_fim: moment.utc().endOf('month').format('YYYY-MM-DD')
                 }
             }
-            delete filtro.aplicado
             const resposta = await $axios.$post('/agendamentos/filtrar', { ...filtro })
             if (!resposta?.erro) {
                 listagem = resposta.dados
             } else {
                 listagem = []
             }
-            return { listagem }
+            return { listagem, filtro }
         } catch (error) {
             console.log(error);
             return { listagem }
@@ -229,8 +218,7 @@ export default {
             denuncia: {},
             exibTeste: false,
             user: JSON.parse(sessionStorage.getItem('user')),
-            filtro: {
-                aplicado: false,
+            filtroZerado: {
                 propriedades_id: null,
                 proprietarios_id: null,
                 representantes_id: null,
@@ -333,15 +321,13 @@ export default {
         },
         async atualizarListagem(filtro) {
             try {
-                let resposta
-                this.filtro = { ...filtro }
-                filtro
-                // const filtro = this.$router.history.current.query
-                // console.log(filtro);
-                delete filtro.aplicado
-                resposta = await this.$axios.$post('/agendamentos/filtrar', { ...filtro })
+                if (!filtro.data_inicio) {
+                    filtro = { ...this.filtroZerado }
+                } else {
+                    this.filtro = { ...filtro }
+                }
+                const resposta = await this.$axios.$post('/agendamentos/filtrar', filtro)
                 this.listagem = resposta.dados
-
                 if (!resposta?.erro) {
                     this.listagem = resposta.dados
                 } else {

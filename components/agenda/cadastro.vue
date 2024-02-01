@@ -26,7 +26,7 @@
                                             <v-col cols="12" sm="6" md="8">
                                                 <v-autocomplete :rules="[rules.required]" label="Propriedades" outlined
                                                     auto-select-first dense :items="listaSelecao.propriedades"
-                                                    :item-text="propriedade => propriedade.nome"
+                                                    :item-text="propriedade => `${propriedade.nome} - ${propriedade.proprietarios?.nome}`"
                                                     :item-value="propriedade => propriedade.id"
                                                     v-model="item.propriedades_id" @change="calcAreaCanaTotal">
                                                 </v-autocomplete>
@@ -34,7 +34,7 @@
                                             <v-col cols="12" sm="6" md="2">
                                                 <v-menu v-model="menu1" :close-on-content-click="false" max-width="290">
                                                     <template v-slot:activator="{ on, attrs }">
-                                                        <v-text-field :value="computedDataInicio"
+                                                        <v-text-field :value="computedDataInicio" :rules="[rules.dataRetro]"
                                                             :error-messages="msgErroDatas" label="Data do início" readonly
                                                             v-bind="attrs" v-on="on" outlined dense></v-text-field>
                                                     </template>
@@ -45,7 +45,7 @@
                                             <v-col cols="12" sm="6" md="2">
                                                 <v-menu v-model="menu2" :close-on-content-click="false" max-width="290">
                                                     <template v-slot:activator="{ on, attrs }">
-                                                        <v-text-field :value="computedDataFim"
+                                                        <v-text-field :value="computedDataFim" :rules="[rules.dataRetro]"
                                                             :error-messages="msgErroDatas" label="Data do fim" readonly
                                                             v-bind="attrs" v-on="on" @click:clear="item.data_fim = null"
                                                             outlined dense></v-text-field>
@@ -56,9 +56,9 @@
                                             </v-col>
 
                                             <v-col cols="12" sm="6" md="2">
-                                                <v-text-field type="number" :rules="[rules.required]"
+                                                <v-text-field type="number" :rules="[rules.required, rules.calcAreaQueima]"
                                                     v-model="item.area_queima" label="Área queima" outlined dense
-                                                    hide-spin-buttons @blur="calcAreaCanaTotal"></v-text-field>
+                                                    hide-spin-buttons></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="2">
                                                 <v-text-field :rules="[rules.required]" v-model="item.talhao" label="Talhão"
@@ -94,11 +94,15 @@
                                     <v-btn color="secondary" elevation="2" outlined dense
                                         @click.prevent.stop="print(item.id)" :disabled="!isEdit">
                                         Imprimir</v-btn>
+                                    <v-btn color="secondary" elevation="2" outlined dense
+                                        @click.prevent.stop="dataRetroativa" :disabled="!isEdit">
+                                        TESTE</v-btn>
                                     <v-spacer></v-spacer>
                                 </v-card-actions>
                             </v-card>
                         </v-tab-item>
                         <v-tab-item value="denuncia">
+                            <br>
                             <DenunciaLista :listagem="listaSelecao.denuncias" :agendaId="item.id" />
                         </v-tab-item>
                     </v-tabs-items>
@@ -142,13 +146,14 @@ export default {
                 required: value => !!value || 'Requerido!',
                 cnpjValido: value => this.$cnpjValido(value) || 'CNPJ inválido!',
                 dataInicioMenor: value => !this.dataInicioMenor(value) || 'A data final precisa ser igual ou maior!',
-                dataFimMaior: value => !this.dataFimMaior(value) || 'A data final precisa ser igual ou maior!'
+                dataFimMaior: value => !this.dataFimMaior(value) || 'A data final precisa ser igual ou maior!',
+                calcAreaQueima: value => !this.calcAreaCanaTotal() || 'A área da qiema não pode ser maior que a área total!',
+                dataRetro: value => this.dataRetroativa(value) || 'A data selecionada não pode ser retroativa'
             },
 
         }
     },
     computed: {
-
         desativarCampoEmpresas() {
             if (this.$store.state.user.user_tipo_id === 1 || this.$store.state.user.parceira_inea)
                 return false
@@ -171,17 +176,27 @@ export default {
 
             })
         },
-        calcAreaCanaTotal(id) {
+        calcAreaCanaTotal() {
             if (this.item.propriedades_id > 0 && this.item.area_queima > 0) {
                 const { propriedades } = this.listaSelecao
                 const index = propriedades.findIndex(item => item.id === this.item.propriedades_id)
                 const areComCana = parseFloat(propriedades[index].area_cana)
                 const areaQuaima = parseFloat(this.item.area_queima)
-                console.log(areComCana > areaQuaima)
-                if (!(areComCana > areaQuaima))
-                    alert('A área da queima não pode ser maior que a área com cana!')
+                if (!(areComCana > areaQuaima)) {
+                    //this.$alertaErro('A área da queima não pode ser maior que a área com cana!')
+                    return true
+                }
+                return false
             }
 
+        },
+        dataRetroativa(value) {
+            if (value) {
+                const hoje = moment().format('YYYY-MM-DD')
+                const strData = value.split('/').reverse().join('-')
+                const data = moment(strData)
+                return moment(hoje).isSameOrBefore(data)
+            }
         },
         dataInicioMenor(data) {
             // console.log('Inicio ', moment(data, 'DD-MM-YYYY').format('L'));
@@ -228,7 +243,6 @@ export default {
         },
         async createItem(item) {
             try {
-                console.log(item);
                 delete item.id
                 await this.$axios.$post(`/agendamento`, item,)
                 this.$emit('atualizarListagem')
@@ -282,4 +296,4 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped></style>

@@ -58,6 +58,7 @@ const eventBus = new Vue()
 // });
 export default {
   name: 'DefaultLayout',
+  middleware: 'auth',
 
   data() {
     return {
@@ -209,6 +210,15 @@ export default {
           }
         )
       }
+      if ([1].some(item => item === user_tipo_id)) {
+        lista.push(
+          {
+            icon: 'mdi-cog-outline',
+            title: 'Configurações',
+            to: '/config'
+          }
+        )
+      }
       return lista
     },
     async logout() {
@@ -227,6 +237,16 @@ export default {
   bottom: 0;
   width: 100%;
   text-align: center;
+
+}
+
+.listagem tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.listagem tbody tr:hover {
+  background-color: rgb(144, 249, 144) !important;
+  cursor: default;
 
 }
 </style>

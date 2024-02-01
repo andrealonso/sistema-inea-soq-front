@@ -2,7 +2,6 @@
     <v-container fluid class="fill-height">
         <v-row class="justify-center ">
             <v-col cols="12" md="4">
-
                 <v-card v-if="!logado">
                     <v-card-title class="justify-center">
                         Sistema de Ordem de Queima
@@ -34,14 +33,7 @@
                         </v-btn>
                         <v-spacer></v-spacer>
                     </v-card-actions>
-                    <snack-login v-if="snack.active" :snack="snack" @close="snack.active = false" />
                 </v-card>
-                <v-card v-if="logado">
-                    <v-card-text class="p-4 text-center">
-
-                    </v-card-text>
-                </v-card>
-
             </v-col>
         </v-row>
     </v-container>
