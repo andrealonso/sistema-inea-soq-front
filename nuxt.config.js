@@ -79,11 +79,11 @@ export default {
       }
     }
   },
-  target: 'static',
+  // target: 'static',
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
   },
   server: {
-    port: 3080
+    port: 8080
   }
 }

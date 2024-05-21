@@ -77,6 +77,7 @@ export default {
         try {
             const sessionUser = JSON.parse(sessionStorage.getItem('user'))
             if (sessionUser && !this.$store.state.user.user_tipo_id) {
+                console.log('aqui login');
                 const responseUser = await this.getUser(sessionUser.token)
                 if (responseUser) {
                     this.$store.commit('user/STORE_USER', responseUser)
@@ -109,11 +110,11 @@ export default {
                 data_inicio: moment.utc().startOf('month').format('YYYY-MM-DD'),
                 data_fim: moment.utc().endOf('month').format('YYYY-MM-DD')
             }
-            this.isLoading = true
             try {
                 if (!this.$refs.form.validate()) {
                     return
                 }
+                this.isLoading = true
                 const dados = await this.$axios.$post(`/login`, this.userData)
                 if (!dados.erro) {
                     this.falhaLogin = false
@@ -130,7 +131,8 @@ export default {
                 this.falhaLogin = true
                 this.msgAlert = 'Erro interno no servidor! Contate o adiministrador.'
                 sessionStorage.removeItem('userToken')
-                console.log(error + 'teste');
+                console.log(error);
+                this.isLoading = false
             }
             this.isLoading = false
         }

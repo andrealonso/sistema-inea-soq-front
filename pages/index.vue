@@ -1,25 +1,28 @@
-<template>
-  <h1>HOME - SOQ</h1>
-</template> 
+<template></template>
 
 <script>
-export default {
-  name: 'home',
-  async asyncData({ $axios }) {
-    try {
-      const resposta = await $axios.$get('/login/getuser')
-    } catch (error) {
-      console.log(error);
+  export default {
+    name: 'home',
+    layout: 'vazio',
+    // async asyncData({ $axios }) {
+    //   try {
+    //     const resposta = await $axios.$get('/login/getuser')
+    //   } catch (error) {
+    //     console.log(error);
+    //   }
+    // },
+    // beforeCreate() {
+    //   const sessionUser = this.$store.state.user
+    //   console.log('session user', sessionUser);
+    //   if (!sessionUser.token)
+    //     this.$router.push({ path: '/login' })
+    //  }
+    beforeCreate() {
+      this.$nuxt.$router.push({ path: '/autenticar' })
+      return
     }
-  },
-  // beforeCreate() {
-  //   const sessionUser = this.$store.state.user
-  //   console.log('session user', sessionUser);
-  //   if (!sessionUser.token)
-  //     this.$router.push({ path: '/login' })
-  // }
 
-}
+  }
 </script>
 
 <style></style>

@@ -4,7 +4,7 @@
             <!-- Listagem -->
             <v-card class="p-3">
                 <v-card-title>
-                    <div>
+                    <div >
                         <h4>Lista de Agendamentos</h4>
                         <p class="text-body-2">Preíodo: {{ filtro.data_inicio | formatData }} á {{ filtro.data_fim |
                             formatData }}</p>
@@ -321,11 +321,11 @@ export default {
         },
         async atualizarListagem(filtro) {
             try {
-                if (!filtro.data_inicio) {
-                    filtro = { ...this.filtroZerado }
-                } else {
-                    this.filtro = { ...filtro }
-                }
+                // if (!filtro.data_inicio) {
+                // } else {
+                //     this.filtro = { ...filtro }
+                // }
+                filtro = { ...this.filtroZerado }
                 const resposta = await this.$axios.$post('/agendamentos/filtrar', filtro)
                 this.listagem = resposta.dados
                 if (!resposta?.erro) {

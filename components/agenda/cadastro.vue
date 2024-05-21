@@ -9,13 +9,14 @@
                 </v-card-title>
                 <v-card-text>
                     <v-tabs v-model="tabs" slider-color="green" fixed-tabs>
-                        <v-tabs-slider></v-tabs-slider>
-                        <v-tab href="#agenda">
-                            Agenda
-                        </v-tab>
-                        <v-tab href="#denuncia" :disabled="!isEdit">
-                            Denuncias
-                        </v-tab>
+                        <v-tabs-slider>
+                            <v-tab href="#agenda">
+                                Agenda
+                            </v-tab>
+                            <v-tab href="#denuncia" :disabled="!isEdit">
+                                Denuncias
+                            </v-tab>
+                        </v-tabs-slider>
                     </v-tabs>
                     <v-tabs-items v-model="tabs">
                         <v-tab-item value="agenda">
@@ -94,9 +95,7 @@
                                     <v-btn color="secondary" elevation="2" outlined dense
                                         @click.prevent.stop="print(item.id)" :disabled="!isEdit">
                                         Imprimir</v-btn>
-                                    <v-btn color="secondary" elevation="2" outlined dense
-                                        @click.prevent.stop="dataRetroativa" :disabled="!isEdit">
-                                        TESTE</v-btn>
+
                                     <v-spacer></v-spacer>
                                 </v-card-actions>
                             </v-card>
@@ -108,7 +107,7 @@
                     </v-tabs-items>
                 </v-card-text>
             </v-card>
-            <agendaPrint open="true" :agenda="item" />
+
         </v-dialog>
     </div>
 </template>
