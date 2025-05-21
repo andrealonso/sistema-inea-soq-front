@@ -4,7 +4,7 @@
             <!-- Listagem -->
             <v-card class="p-3">
                 <v-card-title>
-                    <div >
+                    <div>
                         <h4>Lista de Agendamentos</h4>
                         <p class="text-body-2">Preíodo: {{ filtro.data_inicio | formatData }} á {{ filtro.data_fim |
                             formatData }}</p>
@@ -38,7 +38,8 @@
                         <!-- eslint-disable-next-line -->
                         <template v-slot:item.actions="{ item }">
                             <v-icon @click.prevent="print(item.id)">mdi-eye</v-icon>
-                            <v-icon :disabled="bloquearUsers(fiscais)" @click.prevent="exibirItem(item)">mdi-pencil</v-icon>
+                            <v-icon :disabled="bloquearUsers(fiscais)"
+                                @click.prevent="exibirItem(item)">mdi-pencil</v-icon>
                         </template>
                         <!-- eslint-disable-next-line -->
                         <template v-slot:item.id="{ item }">
@@ -60,7 +61,8 @@
                             <v-col cols="12" md="4" v-for="itemCard in listagem" :key="itemCard.id">
                                 <v-card rounded="xl" height="300" min class="d-flex flex-column ">
                                     <v-card-title class="d-flex justify-space-between py-1">
-                                        <h5>{{ itemCard.data_inicio | formatData }} - {{ itemCard.data_fim | formatData }}
+                                        <h5>{{ itemCard.data_inicio | formatData }} - {{ itemCard.data_fim | formatData
+                                            }}
                                         </h5>
                                         <v-menu bottom origin="center center" transition="scale-transition">
                                             <template v-slot:activator="{ on, attrs }">
@@ -87,12 +89,14 @@
                                     <v-divider></v-divider>
                                     <v-card-text>
 
-                                        <div class="text-body-2"><strong>Código:</strong> {{ itemCard.id | zeroLeft }}</div>
+                                        <div class="text-body-2"><strong>Código:</strong> {{ itemCard.id | zeroLeft }}
+                                        </div>
                                         <div class="text-body-2"><strong>Propriedade:</strong> {{
                                             itemCard.propriedades?.nome }}
                                         </div>
-                                        <div class="text-body-2"><strong>Área da queima:</strong> {{ itemCard.area_queima
-                                        }}</div>
+                                        <div class="text-body-2"><strong>Área da queima:</strong> {{
+                                            itemCard.area_queima
+                                            }}</div>
                                         <div class="text-body-2"><strong>Talhão:</strong> {{ itemCard?.talhao }}</div>
 
                                         <div class="text-body-2"><strong>Proprietario:</strong> {{
@@ -170,7 +174,8 @@
 
         <filtrosAgenda v-if="exibFiltro" :open="exibFiltro" @close="exibFiltro = false"
             @atualizarListagem="atualizarListagem" :filtroCad="filtro" :lista-selecao="listaSelecao" />
-        <DialogLoading v-if="isLoading" :is-loading="isLoading" :cor="'purple lighten-1'" :texto="'Atualizando dados...'" />
+        <DialogLoading v-if="isLoading" :is-loading="isLoading" :cor="'purple lighten-1'"
+            :texto="'Atualizando dados...'" />
 
     </v-row>
 </template>

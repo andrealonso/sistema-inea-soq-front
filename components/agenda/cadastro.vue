@@ -9,14 +9,13 @@
                 </v-card-title>
                 <v-card-text>
                     <v-tabs v-model="tabs" slider-color="green" fixed-tabs>
-                        <v-tabs-slider>
-                            <v-tab href="#agenda">
-                                Agenda
-                            </v-tab>
-                            <v-tab href="#denuncia" :disabled="!isEdit">
-                                Denuncias
-                            </v-tab>
-                        </v-tabs-slider>
+                        <v-tabs-slider></v-tabs-slider>
+                        <v-tab href="#agenda">
+                            Agenda
+                        </v-tab>
+                        <v-tab href="#denuncia" :disabled="!isEdit">
+                            Denuncias
+                        </v-tab>
                     </v-tabs>
                     <v-tabs-items v-model="tabs">
                         <v-tab-item value="agenda">
@@ -35,9 +34,10 @@
                                             <v-col cols="12" sm="6" md="2">
                                                 <v-menu v-model="menu1" :close-on-content-click="false" max-width="290">
                                                     <template v-slot:activator="{ on, attrs }">
-                                                        <v-text-field :value="computedDataInicio" :rules="[rules.dataRetro]"
-                                                            :error-messages="msgErroDatas" label="Data do início" readonly
-                                                            v-bind="attrs" v-on="on" outlined dense></v-text-field>
+                                                        <v-text-field :value="computedDataInicio"
+                                                            :rules="[rules.dataRetro]" :error-messages="msgErroDatas"
+                                                            label="Data do início" readonly v-bind="attrs" v-on="on"
+                                                            outlined dense></v-text-field>
                                                     </template>
                                                     <v-date-picker v-if="!isEdit" v-model="item.data_inicio"
                                                         @input="menu1 = false"></v-date-picker>
@@ -46,10 +46,11 @@
                                             <v-col cols="12" sm="6" md="2">
                                                 <v-menu v-model="menu2" :close-on-content-click="false" max-width="290">
                                                     <template v-slot:activator="{ on, attrs }">
-                                                        <v-text-field :value="computedDataFim" :rules="[rules.dataRetro]"
-                                                            :error-messages="msgErroDatas" label="Data do fim" readonly
-                                                            v-bind="attrs" v-on="on" @click:clear="item.data_fim = null"
-                                                            outlined dense></v-text-field>
+                                                        <v-text-field :value="computedDataFim"
+                                                            :rules="[rules.dataRetro]" :error-messages="msgErroDatas"
+                                                            label="Data do fim" readonly v-bind="attrs" v-on="on"
+                                                            @click:clear="item.data_fim = null" outlined
+                                                            dense></v-text-field>
                                                     </template>
                                                     <v-date-picker v-if="!isEdit" v-model="item.data_fim"
                                                         @change="menu2 = false"></v-date-picker>
@@ -57,13 +58,14 @@
                                             </v-col>
 
                                             <v-col cols="12" sm="6" md="2">
-                                                <v-text-field type="number" :rules="[rules.required, rules.calcAreaQueima]"
+                                                <v-text-field type="number"
+                                                    :rules="[rules.required, rules.calcAreaQueima]"
                                                     v-model="item.area_queima" label="Área queima" outlined dense
                                                     hide-spin-buttons></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="2">
-                                                <v-text-field :rules="[rules.required]" v-model="item.talhao" label="Talhão"
-                                                    outlined dense></v-text-field>
+                                                <v-text-field :rules="[rules.required]" v-model="item.talhao"
+                                                    label="Talhão" outlined dense></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="8">
                                                 <v-autocomplete :rules="[rules.required]" label="Empresas" outlined
