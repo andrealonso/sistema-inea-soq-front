@@ -10,8 +10,8 @@
                         <v-form ref="form" v-model="valid" lazy-validation>
                             <v-col cols="12" class="mt-7">
                                 <v-text-field validate-on-blur :rules="[rules.required, rules.email]" type="email"
-                                    v-model="userData.login" @keypress.enter="efetuarLogin" label="Login - Email" outlined
-                                    dense required></v-text-field>
+                                    v-model="userData.login" @keypress.enter="efetuarLogin" label="Login - Email"
+                                    outlined dense required></v-text-field>
                             </v-col>
                             <v-col cols="12">
                                 <v-text-field validate-on-blur :rules="[rules.required]" type="password"
@@ -28,7 +28,8 @@
                         <v-spacer></v-spacer>
                         <v-btn @click="efetuarLogin" :disabled="isLoading">Efetuar Login
                             <v-btn icon absolute>
-                                <v-progress-circular indeterminate color="green" v-show="isLoading"></v-progress-circular>
+                                <v-progress-circular indeterminate color="green"
+                                    v-show="isLoading"></v-progress-circular>
                             </v-btn>
                         </v-btn>
                         <v-spacer></v-spacer>
@@ -140,4 +141,3 @@ export default {
 
 }
 </script>
-

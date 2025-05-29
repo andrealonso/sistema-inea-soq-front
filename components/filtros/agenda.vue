@@ -127,7 +127,7 @@ export default {
         },
         aplicar() {
             this.limparParametrosNulos()
-            this.$router.push({ path: '/agendamentos', query: this.filtro, })
+            // this.$router.push({ path: '/agendamentos', query: this.filtro, })
             this.$emit('atualizarListagem', this.filtro)
             this.$emit('close')
         },

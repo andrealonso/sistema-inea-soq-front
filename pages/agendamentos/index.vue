@@ -62,7 +62,7 @@
                                 <v-card rounded="xl" height="300" min class="d-flex flex-column ">
                                     <v-card-title class="d-flex justify-space-between py-1">
                                         <h5>{{ itemCard.data_inicio | formatData }} - {{ itemCard.data_fim | formatData
-                                            }}
+                                        }}
                                         </h5>
                                         <v-menu bottom origin="center center" transition="scale-transition">
                                             <template v-slot:activator="{ on, attrs }">
@@ -96,7 +96,7 @@
                                         </div>
                                         <div class="text-body-2"><strong>Área da queima:</strong> {{
                                             itemCard.area_queima
-                                            }}</div>
+                                        }}</div>
                                         <div class="text-body-2"><strong>Talhão:</strong> {{ itemCard?.talhao }}</div>
 
                                         <div class="text-body-2"><strong>Proprietario:</strong> {{
@@ -175,7 +175,7 @@
         <filtrosAgenda v-if="exibFiltro" :open="exibFiltro" @close="exibFiltro = false"
             @atualizarListagem="atualizarListagem" :filtroCad="filtro" :lista-selecao="listaSelecao" />
         <DialogLoading v-if="isLoading" :is-loading="isLoading" :cor="'purple lighten-1'"
-            :texto="'Atualizando dados...'" />
+            :texto="'Atualizando dados... '" />
 
     </v-row>
 </template>
@@ -330,8 +330,12 @@ export default {
                 // } else {
                 //     this.filtro = { ...filtro }
                 // }
-                filtro = { ...this.filtroZerado }
-                const resposta = await this.$axios.$post('/agendamentos/filtrar', filtro)
+
+                if (filtro.data_inicio) {
+                    this.filtro = { ...filtro }
+                }
+                console.log(filtro);
+                const resposta = await this.$axios.$post('/agendamentos/filtrar', this.filtro)
                 this.listagem = resposta.dados
                 if (!resposta?.erro) {
                     this.listagem = resposta.dados
